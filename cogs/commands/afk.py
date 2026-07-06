@@ -1,5 +1,5 @@
 from utils import emojis
-from utils.components_v2 import success_panel, error_panel, info_panel
+from utils.components_v2 import success_panel, error_panel
 
 import asyncio
 import discord
@@ -179,12 +179,8 @@ class afk(commands.Cog):
             return await ctx.send(view=error_panel(f"{emojis.ICONS_WARNING} | You can't advertise Serve Invite in the AFK reason"))
 
         view = OnOrOff(ctx)
-        em = info_panel("Should I DM you on mentions?")
-        try:
-            em.set_author = lambda *a, **kw: None  # no-op, LayoutView doesn't have set_author
-        except:
-            pass
-        test = await ctx.reply(view=em)
+        prompt = discord.Embed(description="Should I DM you when someone mentions you?")
+        test = await ctx.reply(view=embed_to_view(prompt, view=view), mention_author=False)
         await view.wait()
 
         async with aiosqlite.connect(DB_PATH) as db:
