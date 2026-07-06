@@ -20,14 +20,18 @@ import discord
 
 __all__ = ("Panel", "cv2_send", "embed_to_view", "embeds_to_view")
 
+<<<<<<< HEAD
 _MAX_TEXT_DISPLAY = 3800
 
+=======
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
 def _asset_url(value: Any) -> Optional[str]:
     url = getattr(value, "url", None)
     return str(url) if url else None
 
 
+<<<<<<< HEAD
 def _append_text_chunks(container_children: list[discord.ui.Item], lines: Iterable[str]) -> None:
     current = ""
     for raw_line in lines:
@@ -43,6 +47,8 @@ def _append_text_chunks(container_children: list[discord.ui.Item], lines: Iterab
         container_children.append(discord.ui.TextDisplay(current))
 
 
+=======
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.Embed) -> None:
     author_name = getattr(embed.author, "name", None)
     if author_name:
@@ -60,6 +66,7 @@ def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.E
     if embed.description:
         container_children.append(discord.ui.TextDisplay(embed.description))
 
+<<<<<<< HEAD
     media_urls: list[str] = []
     thumb_url = _asset_url(embed.thumbnail)
     if thumb_url:
@@ -71,14 +78,28 @@ def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.E
         container_children.append(
             discord.ui.MediaGallery(*(discord.MediaGalleryItem(url) for url in media_urls))
         )
+=======
+    thumb_url = _asset_url(embed.thumbnail)
+    if thumb_url:
+        container_children.append(discord.ui.Thumbnail(thumb_url))
+
+    image_url = _asset_url(embed.image)
+    if image_url:
+        container_children.append(discord.ui.MediaGallery(discord.MediaGalleryItem(image_url)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
     if embed.fields:
         if embed.description or embed.title or author_name or thumb_url or image_url:
             container_children.append(discord.ui.Separator())
+<<<<<<< HEAD
         _append_text_chunks(
             container_children,
             (f"**{field.name}**\n{field.value}" for field in embed.fields),
         )
+=======
+        for field in embed.fields:
+            container_children.append(discord.ui.TextDisplay(f"**{field.name}**\n{field.value}"))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
     footer_text = getattr(embed.footer, "text", None)
     if footer_text:
@@ -86,6 +107,7 @@ def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.E
         container_children.append(discord.ui.TextDisplay(f"-# {footer_text}"))
 
 
+<<<<<<< HEAD
 def _append_view_links(container_children: list[discord.ui.Item], source: Optional[discord.ui.View]) -> None:
     if source is None:
         return
@@ -99,6 +121,46 @@ def _append_view_links(container_children: list[discord.ui.Item], source: Option
     if links:
         container_children.append(discord.ui.Separator())
         container_children.append(discord.ui.TextDisplay(" | ".join(links)))
+=======
+def _copy_view_items(target: discord.ui.LayoutView, source: Optional[discord.ui.View]) -> None:
+    if source is None:
+        return
+
+    button_row: list[discord.ui.Item] = []
+
+    def flush_buttons() -> None:
+        nonlocal button_row
+        if button_row:
+            target.add_item(discord.ui.ActionRow(*button_row))
+            button_row = []
+
+    for child in list(getattr(source, "children", ())):
+        if isinstance(child, discord.ui.Button):
+            button_row.append(child)
+            if len(button_row) == 5:
+                flush_buttons()
+            continue
+
+        if isinstance(child, discord.ui.select.BaseSelect):
+            flush_buttons()
+            target.add_item(discord.ui.ActionRow(child))
+            continue
+
+        flush_buttons()
+        try:
+            target.add_item(child)
+        except ValueError:
+            continue
+
+    flush_buttons()
+
+    for name in ("interaction_check", "on_timeout", "on_error"):
+        if hasattr(source, name):
+            try:
+                setattr(target, name, getattr(source, name))
+            except Exception:
+                pass
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
 
 def embeds_to_view(
@@ -113,6 +175,7 @@ def embeds_to_view(
             children.append(discord.ui.Separator())
         _add_embed_parts(children, embed)
 
+<<<<<<< HEAD
     _append_view_links(children, view)
 
     if not children:
@@ -120,6 +183,11 @@ def embeds_to_view(
 
     layout = discord.ui.LayoutView(timeout=timeout if timeout is not None else getattr(view, "timeout", 180))
     layout.add_item(discord.ui.Container(*children))
+=======
+    layout = discord.ui.LayoutView(timeout=timeout if timeout is not None else getattr(view, "timeout", 180))
+    layout.add_item(discord.ui.Container(*children))
+    _copy_view_items(layout, view)
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
     return layout
 
 

@@ -1,5 +1,5 @@
 from utils import emojis
-from utils.components_v2 import success_panel, error_panel, info_panel
+from utils.components_v2 import success_panel, error_panel
 
 import asyncio
 import discord
@@ -179,7 +179,12 @@ class afk(commands.Cog):
             return await ctx.send(view=error_panel(f"{emojis.ICONS_WARNING} | You can't advertise Serve Invite in the AFK reason"))
 
         view = OnOrOff(ctx)
+<<<<<<< HEAD
         test = await ctx.reply(content="Should I DM you on mentions?", view=view, mention_author=False)
+=======
+        prompt = discord.Embed(description="Should I DM you when someone mentions you?")
+        test = await ctx.reply(view=embed_to_view(prompt, view=view), mention_author=False)
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
         await view.wait()
 
         async with aiosqlite.connect(DB_PATH) as db:

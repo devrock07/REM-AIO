@@ -52,9 +52,14 @@ class Mention(commands.Cog):
                     color=self.color,
                     description=f"Hey {message.author.mention},\nPrefix For This Server is `{prefix}`\nServer ID: {message.guild.id}\n\nType `{prefix}help` for more information."
                 )
+<<<<<<< HEAD
                 bot_avatar = self.bot.user.display_avatar.url
                 embed.set_thumbnail(url=bot_avatar)
                 embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=bot_avatar)
+=======
+                embed.set_thumbnail(url=self.bot.user.avatar.url)
+                embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.avatar.url)
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
                 buttons = [
                     discord.ui.Button(label="Invite", style=discord.ButtonStyle.link, url="https://discord.com/oauth2/authorize?client_id=1327994903048884288&permissions=8&integration_type=0&scope=bot+applications.commands"),

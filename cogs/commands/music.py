@@ -401,6 +401,39 @@ class Music(commands.Cog):
         except Exception:
             return False
 
+    def source_link_value(self, track) -> str:
+        uri = getattr(track, "uri", None) or ""
+        source = f"{getattr(track, 'source', '')} {uri}".lower()
+
+        if "spotify" in source:
+            emoji, label = getattr(emojis, "SPOTIFY", emojis.YOUTUBE), "Listen on Spotify"
+        elif "jiosaavn" in source:
+            emoji, label = emojis.JIOSAAVN, "Listen on JioSaavn"
+        elif "soundcloud" in source:
+            emoji, label = emojis.SOUNDCLOUD, "Listen on SoundCloud"
+        else:
+            emoji, label = emojis.YOUTUBE, "Listen on YouTube"
+
+        return f"{emoji} [{label}]({uri})" if uri else f"{emoji} {label}"
+
+    def source_name(self, track) -> str:
+        source = f"{getattr(track, 'source', '')} {getattr(track, 'uri', '')}".lower()
+        if "spotify" in source:
+            return "Spotify"
+        if "youtube" in source or "youtu.be" in source:
+            return "YouTube"
+        if "soundcloud" in source:
+            return "SoundCloud"
+        if "jiosaavn" in source:
+            return "JioSaavn"
+        return "Unknown Source"
+
+    def track_link(self, track) -> str:
+        title = getattr(track, "title", "Unknown track")
+        uri = getattr(track, "uri", None)
+        title = str(title).replace("[", "\\[").replace("]", "\\]")
+        return f"[{title}]({uri})" if uri else f"**{title}**"
+
     async def ensure_lavalink(self, ctx: commands.Context) -> bool:
         if self.is_lavalink_available():
             return True
@@ -530,13 +563,14 @@ class Music(commands.Cog):
             file = discord.File(image_bytes, filename="player.png")
             sec = track.length // 1000
             duration= f"0{sec // 60}:{sec % 60}" if sec < 600 else f"{sec // 60}:{sec % 60}"
+            source = f"{getattr(track, 'source', '')} {getattr(track, 'uri', '')}".lower()
             embed = discord.Embed(title=f"**{track.title}**",
-            color=0x1DB954 if "spotify" in track.source else 0x00E6A7 if "jiosaavn" in track.source else 0xFF0000 if "youtube" in track.source else 0xFF5500
+            color=0x1DB954 if "spotify" in source else 0x00E6A7 if "jiosaavn" in source else 0xFF0000 if "youtube" in source else 0xFF5500
             )
             #embed.set_author(name="Now Playing", icon_url="https://cdn.discordapp.com/emojis/1275556609958875218.gif")
             embed.add_field(name="Author", value=f"`{track.author}`")
             embed.add_field(name="Duration", value=f"`{duration}`")
-            embed.add_field(name="Source", value=f"[{emojis.YOUTUBE}  Listen on Spotify]({track.uri})" if "spotify" in track.source else f"[{emojis.JIOSAAVN} Listen on JioSaavn]({track.uri})" if "jiosaavn" in track.source else f"[{emojis.SOUNDCLOUD} Listen on SoundCloud]({track.uri})" if "soundcloud" in track.source else f"[{emojis.YOUTUBE} Listen on YouTube]({track.uri})")
+            embed.add_field(name="Source", value=self.source_link_value(track))
             embed.set_image(url="attachment://player.png")
             embed.set_footer(text="Requested by " + (ctx.author.display_name if not autoplay else f"{ctx.author.display_name} (Autoplay Mode)"), icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 
@@ -616,7 +650,11 @@ class Music(commands.Cog):
 
         if isinstance(tracks, wavelink.Playlist):
             await vc.queue.put_wait(tracks.tracks)
+<<<<<<< HEAD
             await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added playlist [{tracks.name}](https://discord.gg/mZBtu84xGH) with **{len(tracks.tracks)} songs** to the queue.", color=0x000000)))
+=======
+            await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added playlist **{tracks.name}** with **{len(tracks.tracks)} songs** to the queue.", color=0x000000)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
             if not vc.playing:
                 track = await vc.queue.get_wait()
                 await vc.play(track)
@@ -624,7 +662,11 @@ class Music(commands.Cog):
         else:
             track = tracks[0]
             await vc.queue.put_wait(track)
+<<<<<<< HEAD
             await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS}  Added [{track.title}](https://discord.gg/mZBtu84xGH) to the queue.", color=0x000000)))
+=======
+            await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added {self.track_link(track)} to the queue.", color=0x000000)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
             if not vc.playing:
                 await vc.play(await vc.queue.get_wait())
                 await self.display_player_embed(vc, track, ctx)
@@ -653,7 +695,11 @@ class Music(commands.Cog):
 
                 track = search_results[0]
                 await vc.queue.put_wait(track)
+<<<<<<< HEAD
                 await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added [{track.title}](https://discord.gg/mZBtu84xGH) to the queue.", color=0x000000)))
+=======
+                await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added {self.track_link(track)} to the queue.", color=0x000000)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
                 if not vc.playing:
                     await vc.play(track)
                     await self.display_player_embed(vc, track, ctx)
@@ -684,7 +730,11 @@ class Music(commands.Cog):
                         c += 1
                         await ctx.message.add_reaction("✅")
 
+<<<<<<< HEAD
                 await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added **{c}** of **{playlist_length}** tracks from **playlist** **[{playlist_info['name']}](https://discord.gg/mZBtu84xGH)** to the queue.", color=0x000000)))
+=======
+                await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added **{c}** of **{playlist_length}** tracks from playlist **{playlist_info['name']}** to the queue.", color=0x000000)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
                 await lmao.delete()
                 
                 if not vc.playing:
@@ -712,7 +762,11 @@ class Music(commands.Cog):
                     if track_results:
                         await vc.queue.put_wait(track_results[0])
 
+<<<<<<< HEAD
                 await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added all tracks from album **[{album_info['name']}](https://discord.gg/mZBtu84xGH)** to the queue.", color=0x000000)))
+=======
+                await ctx.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_PLUS} Added all tracks from album **{album_info['name']}** to the queue.", color=0x000000)))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
                 if not vc.playing:
                     next_track = await vc.queue.get_wait()
                     await vc.play(next_track)
@@ -784,16 +838,7 @@ class Music(commands.Cog):
         queue_length = len(vc.queue) if vc.queue else 0
 
 
-        if "spotify" in track.uri:
-            source_name = "Spotify"
-        elif "youtube" in track.uri:
-            source_name = "YouTube"
-        elif "soundcloud" in track.uri:
-            source_name = "SoundCloud"
-        elif "jiosaavn" in track.uri:
-            source_name = "JioSaavn"
-        else:
-            source_name = "Unknown Source"
+        source_name = self.source_name(track)
 
 
         embed = discord.Embed(
@@ -805,7 +850,7 @@ class Music(commands.Cog):
         embed.add_field(name="Progress", value=f"{position_str} [{progress_bar}] {length_str}", inline=False)
         embed.add_field(name="Duration", value=length_str, inline=False)
         embed.add_field(name="Queue Length", value=str(queue_length), inline=False)
-        embed.add_field(name="Source", value=f"{source_name} - [Link]({track.uri})", inline=False)
+        embed.add_field(name="Source", value=self.source_link_value(track), inline=False)
         embed.set_thumbnail(url=track.artwork if track.artwork else "")
         embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 

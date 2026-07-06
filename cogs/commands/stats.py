@@ -9,6 +9,7 @@ import aiosqlite
 import discord
 import psutil
 import wavelink
+<<<<<<< HEAD
 from discord import Embed
 from discord.ext import commands
 
@@ -16,6 +17,9 @@ from utils import emojis
 from utils.Tools import blacklist_check, ignore_check
 from utils.cv2_compat import embed_to_view
 
+=======
+from utils.cv2_compat import embed_to_view, embeds_to_view
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
 class Stats(commands.Cog):
     def __init__(self, bot):
@@ -105,9 +109,14 @@ class Stats(commands.Cog):
     @blacklist_check()
     @ignore_check()
     @commands.cooldown(1, 7, commands.BucketType.user)
+<<<<<<< HEAD
     async def stats(self, ctx: commands.Context):
         processing_message = await ctx.send(f"{emojis.LOADING} Loading REM ALL IN ONE BOT information...")
 
+=======
+    async def stats(self, ctx):
+        processing_message = await ctx.send(f"{emojis.LOADING} Loading REM ALL IN ONE BOT information...")
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
         guild_count = len(self.bot.guilds)
         user_count = sum(g.member_count for g in self.bot.guilds if g.member_count is not None)
         bot_count = sum(sum(1 for m in g.members if m.bot) for g in self.bot.guilds)
@@ -135,10 +144,22 @@ class Stats(commands.Cog):
         channels_connected = sum(1 for vc in self.bot.voice_clients if vc)
         playing_tracks = sum(1 for vc in self.bot.voice_clients if getattr(vc, "playing", False))
 
+<<<<<<< HEAD
         shard_id = ctx.guild.shard_id if ctx.guild else 0
         shard = self.bot.get_shard(shard_id)
         websocket_latency = round(self.bot.latency * 1000, 2)
         shard_latency = round((shard.latency if shard else self.bot.latency) * 1000, 2)
+=======
+        embed = Embed(title="REM ALL IN ONE BOT Statistics: General", color=0x000000)
+        embed.add_field(name=" Channels", value=f"Total: **{channel_count}**\nText: **{text_channel_count}**   |   Voice: **{voice_channel_count}**   |   Category: **{category_channel_count}**", inline=False)
+        embed.add_field(name=f"{emojis.ICON_PING} Uptime", value=f"{uptime}", inline=False)
+        embed.add_field(name=f"{emojis.USER} User Count", value=f"Humans: **{human_count}**   |   Bots: **{bot_count}**", inline=False)
+        embed.add_field(name=f"{emojis.FILE} Commands", value=f"Total: **{commands_count}**   |   Slash: **{slash_commands}**", inline=False)
+        embed.add_field(name=f"{emojis.ICONS_CHANNEL} Libraries Used", value=f"Discord Library: **[discord.py](https://discordpy.readthedocs.io/en/stable/)**", inline=False)
+        embed.add_field(name=f"{emojis.ICONS_DISCORDBOTDEV} Codebase Stats", value=f"Total Python Files: **{total_files}**\nTotal Lines: **{total_lines}**\nTotal Words: **{total_words}**", inline=False)
+        embed.add_field(name=f"{emojis.ICONS_MUSIC} Music Stats", value=f"Currently Connected: **{channels_connected}**\nCurrently Playing: **{playing_tracks}**\nTotal Songs Played: **{self.total_songs_played}**", inline=False)
+        embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
 
         db_latency = "N/A"
         try:
@@ -149,6 +170,7 @@ class Stats(commands.Cog):
         except Exception:
             pass
 
+<<<<<<< HEAD
         embed = Embed(title="REM ALL IN ONE BOT Statistics", color=0x000000)
         embed.add_field(
             name="Channels",
@@ -187,4 +209,61 @@ class Stats(commands.Cog):
         embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
 
         await ctx.reply(view=embed_to_view(embed), mention_author=False)
+=======
+        general_button = Button(label="General", style=ButtonStyle.gray)
+        async def general_button_callback(interaction):
+            if interaction.user == ctx.author:
+                await interaction.response.edit_message(view = embed_to_view(embed, view = view))
+        general_button.callback = general_button_callback
+        view.add_item(general_button)
+
+        system_button = Button(label="System", style=ButtonStyle.gray)
+        async def system_button_callback(interaction):
+            if interaction.user == ctx.author:
+                system_embed = Embed(title="REM ALL IN ONE BOT Statistics: System", color=0x000000)
+                system_embed.add_field(name=f"{emojis.COMMANDS} System Info", value=f"• Discord.py: **{discord.__version__}**\n• Python: **{platform.python_version()}**\n• Architecture: **{platform.machine()}**\n• Platform: **{platform.system()}**", inline=False)
+                system_embed.add_field(name=f"{emojis.QUESTIONS} Memory Info", value=f"• Total Memory: **{memory_info.total / (1024 ** 2):,.2f} MB**\n• Memory Left: **{memory_info.available / (1024 ** 2):,.2f} MB**\n• Heap Total: **{memory_info.used / (1024 ** 2):,.2f} MB**", inline=False)
+                system_embed.add_field(name=f"{emojis.ICONSETTING} CPU Info", value=f"• CPU: **{psutil.cpu_freq().max}' GHz**\n• CPU Usage: **{psutil.cpu_percent()}%**\n• CPU Cores: **{psutil.cpu_count(logical=False)}**\n• CPU Speed: **{cpu_info.current:.2f} MHz**", inline=False)
+                system_embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
+                await interaction.response.edit_message(view = embed_to_view(system_embed, view = view))
+        system_button.callback = system_button_callback
+        view.add_item(system_button)
+
+        ping_button = Button(label="Ping", style=ButtonStyle.green)
+        async def ping_button_callback(interaction):
+            if interaction.user == ctx.author:
+                s_id = ctx.guild.shard_id
+                sh = self.bot.get_shard(s_id)
+                db_latency = None
+                try:
+                    async with aiosqlite.connect("db/afk.db") as db:
+                        start_time = time.perf_counter()
+                        await db.execute("SELECT 1")
+                        end_time = time.perf_counter()
+                        db_latency = (end_time - start_time) * 1000
+                        db_latency = round(db_latency, 2)
+                except Exception:
+                    db_latency = "N/A"
+                wsping = round(self.bot.latency * 1000, 2)
+                ping_embed = Embed(title="Bot Statistic: Ping", color=0x000000)
+                ping_embed.add_field(name="🏓 Bot Latency", value=f"{round(sh.latency * 800)} ms", inline=False)
+                ping_embed.add_field(name="🏓 Database Latency", value=f"{db_latency} ms", inline=False)
+                ping_embed.add_field(name="🏓 Websocket Latency", value=f"{wsping} ms", inline=False)
+                ping_embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
+                await interaction.response.edit_message(view = embed_to_view(ping_embed, view = view))
+        ping_button.callback = ping_button_callback
+        view.add_item(ping_button)
+
+        delete_button = Button(label="🗑️", style=ButtonStyle.red)
+        async def delete_button_callback(interaction):
+            if interaction.user == ctx.author:
+                await interaction.message.delete()
+        delete_button.callback = delete_button_callback
+        view.add_item(delete_button)
+
+        server_count_button = Button(label=f"Servers: {guild_count}    |    Users: {blahh}", style=ButtonStyle.success, disabled=True)
+        view.add_item(server_count_button)
+
+        await ctx.reply(view = embed_to_view(embed, view = view))
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
         await processing_message.delete()

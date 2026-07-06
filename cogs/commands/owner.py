@@ -859,11 +859,16 @@ class Badges(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author} | Nitro badge if banner/animated avatar; Booster badge if boosting a mutual guild with bot.", icon_url=ctx.author.avatar.url
                                if ctx.author.avatar else ctx.author.default_avatar.url)
 
+<<<<<<< HEAD
             try:
                 await ctx.send(view = embed_to_view(embed), file=file)
             finally:
                 image_binary.close()
                 await processing_message.delete()
+=======
+            await ctx.send(view = embed_to_view(embed), file=file)
+            await processing_message.delete()
+>>>>>>> 597e821a07560f19f64c5b9f02daf0e0fc653532
         else:
             embed = discord.Embed(title=f"{member.display_name}'s Profile", color=0x000000)
 
