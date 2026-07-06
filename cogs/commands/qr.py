@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class QR(commands.Cog):
     def __init__(self, bot):
@@ -20,7 +21,7 @@ class QR(commands.Cog):
             color=discord.Color.blurple()
         )
         embed.set_image(url="https://cdn.discordapp.com/attachments/1334099972739829843/1377897856286851152/share_image4613677226378289500.png?ex=683aa2e1&is=68395161&hm=fa960adfa3b38961d4fad9861156100111b54d256259cdf436924db1ac0fee48&")
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @qr.error
     async def qr_error(self, ctx, error):

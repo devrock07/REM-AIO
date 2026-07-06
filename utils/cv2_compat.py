@@ -14,10 +14,122 @@ Usage:
 """
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from typing import Optional, Any
 import discord
 
-__all__ = ("Panel", "cv2_send")
+__all__ = ("Panel", "cv2_send", "embed_to_view", "embeds_to_view")
+
+_MAX_TEXT_DISPLAY = 3800
+
+
+def _asset_url(value: Any) -> Optional[str]:
+    url = getattr(value, "url", None)
+    return str(url) if url else None
+
+
+def _append_text_chunks(container_children: list[discord.ui.Item], lines: Iterable[str]) -> None:
+    current = ""
+    for raw_line in lines:
+        line = str(raw_line)
+        candidate = line if not current else f"{current}\n\n{line}"
+        if len(candidate) > _MAX_TEXT_DISPLAY and current:
+            container_children.append(discord.ui.TextDisplay(current))
+            current = line
+        else:
+            current = candidate
+
+    if current:
+        container_children.append(discord.ui.TextDisplay(current))
+
+
+def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.Embed) -> None:
+    author_name = getattr(embed.author, "name", None)
+    if author_name:
+        container_children.append(discord.ui.TextDisplay(f"> {author_name}"))
+
+    if embed.title:
+        title = f"## {embed.title}"
+        if embed.url:
+            title = f"## [{embed.title}]({embed.url})"
+        container_children.append(discord.ui.TextDisplay(title))
+
+    if author_name or embed.title:
+        container_children.append(discord.ui.Separator(visible=False))
+
+    if embed.description:
+        container_children.append(discord.ui.TextDisplay(embed.description))
+
+    media_urls: list[str] = []
+    thumb_url = _asset_url(embed.thumbnail)
+    if thumb_url:
+        media_urls.append(thumb_url)
+    image_url = _asset_url(embed.image)
+    if image_url:
+        media_urls.append(image_url)
+    if media_urls:
+        container_children.append(
+            discord.ui.MediaGallery(*(discord.MediaGalleryItem(url) for url in media_urls))
+        )
+
+    if embed.fields:
+        if embed.description or embed.title or author_name or thumb_url or image_url:
+            container_children.append(discord.ui.Separator())
+        _append_text_chunks(
+            container_children,
+            (f"**{field.name}**\n{field.value}" for field in embed.fields),
+        )
+
+    footer_text = getattr(embed.footer, "text", None)
+    if footer_text:
+        container_children.append(discord.ui.Separator())
+        container_children.append(discord.ui.TextDisplay(f"-# {footer_text}"))
+
+
+def _append_view_links(container_children: list[discord.ui.Item], source: Optional[discord.ui.View]) -> None:
+    if source is None:
+        return
+
+    links: list[str] = []
+    for child in list(getattr(source, "children", ())):
+        if isinstance(child, discord.ui.Button) and child.url:
+            label = child.label or "Open"
+            links.append(f"[{label}]({child.url})")
+
+    if links:
+        container_children.append(discord.ui.Separator())
+        container_children.append(discord.ui.TextDisplay(" | ".join(links)))
+
+
+def embeds_to_view(
+    embeds: Optional[Sequence[discord.Embed]],
+    view: Optional[discord.ui.View] = None,
+    *,
+    timeout: Optional[float] = None,
+) -> discord.ui.LayoutView:
+    children: list[discord.ui.Item] = []
+    for index, embed in enumerate(embeds or []):
+        if index:
+            children.append(discord.ui.Separator())
+        _add_embed_parts(children, embed)
+
+    _append_view_links(children, view)
+
+    if not children:
+        children.append(discord.ui.TextDisplay("\u200b"))
+
+    layout = discord.ui.LayoutView(timeout=timeout if timeout is not None else getattr(view, "timeout", 180))
+    layout.add_item(discord.ui.Container(*children))
+    return layout
+
+
+def embed_to_view(
+    embed: Optional[discord.Embed],
+    view: Optional[discord.ui.View] = None,
+    *,
+    timeout: Optional[float] = None,
+) -> discord.ui.LayoutView:
+    return embeds_to_view([embed] if embed is not None else [], view=view, timeout=timeout)
 
 
 class Panel:
@@ -82,8 +194,7 @@ class Panel:
         if self._fields:
             if self.description or self.title or self._author_name:
                 children.append(discord.ui.Separator(visible=True))
-            for name, value, _ in self._fields:
-                children.append(discord.ui.TextDisplay(f"**{name}**\n{value}"))
+            _append_text_chunks(children, (f"**{name}**\n{value}" for name, value, _ in self._fields))
 
         # Footer
         if self._footer_text:

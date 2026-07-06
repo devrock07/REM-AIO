@@ -14,6 +14,7 @@ from utils import Paginator, DescriptionEmbedPaginator, FieldPagePaginator, Text
 import asyncio
 from utils.config import serverLink
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 color = 0x185fe5
 client = axon()
@@ -71,7 +72,7 @@ class HelpCommand(commands.HelpCommand):
         match_list = "\n".join([f"{index}. `{match}`" for index, match in enumerate(matches, start=1)])
         embed.add_field(name="Did you mean:", value=match_list, inline=True)
 
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   async def send_bot_help(self, mapping):
     ctx = self.context
@@ -124,7 +125,7 @@ class HelpCommand(commands.HelpCommand):
                       value=f"`{self.context.prefix}{command.signature}`\n")
     embed.set_author(name=f"{command.qualified_name.title()} Command",
                        icon_url=self.context.bot.user.display_avatar.url)
-    await self.context.reply(embed=embed, mention_author=False)
+    await self.context.reply(view = embed_to_view(embed), mention_author=False)
 
   def get_command_signature(self, command: commands.Command) -> str:
     parent = command.full_parent_name

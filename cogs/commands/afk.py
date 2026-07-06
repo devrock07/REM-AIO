@@ -9,6 +9,7 @@ import os
 import time
 from typing import Optional
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 black1 = 0
 black2 = 0
@@ -25,7 +26,7 @@ class BasicView(discord.ui.View):
         if interaction.user.id != self.ctx.author.id:
             await interaction.response.send_message(
                 view=error_panel(f"Only **{self.ctx.author}** can use this command. Use {self.ctx.prefix}**{self.ctx.command}** to run the command"),
-                flags=discord.MessageFlags(ephemeral=True, is_components_v2=True)
+                ephemeral=True,
             )
             return False
         return True
@@ -97,7 +98,7 @@ class afk(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         try:
-            if message.author.bot:
+            if message.author.bot or message.guild is None:
                 return
 
             async with aiosqlite.connect(DB_PATH) as db:
@@ -120,7 +121,7 @@ class afk(commands.Cog):
                         wlbat = discord.Embed(title=f'{message.author.display_name} Welcome Back!',
                                               description=f'I removed your AFK\nTotal Mentions: **{mentionz}**\nAFK Timing: **{been_afk_for}**', color=0x0c0606)
                         try:
-                            await message.reply(embed=wlbat)
+                            await message.reply(view = embed_to_view(wlbat))
                         except discord.Forbidden:
                             print(f"(AFK module) Missing permissions to send messages in channel: {message.channel.id}")
 
@@ -141,7 +142,7 @@ class afk(commands.Cog):
                                 ok = afk_data[2]
                                 wl = discord.Embed(description=f'**<@{user_mention.id}>** went AFK <t:{ok}:R> for the following reason:\n**{reason}**', color=0x0c0606)
                                 try:
-                                    await message.reply(embed=wl)
+                                    await message.reply(view = embed_to_view(wl))
                                 except discord.Forbidden:
                                     print(f"(AFK module) Missing permissions to send messages to user: {user_mention.id}")
 
@@ -156,7 +157,7 @@ class afk(commands.Cog):
 
                                 if afk_data[4] == 'True':
                                     try:
-                                        await user_mention.send(embed=embed)
+                                        await user_mention.send(view = embed_to_view(embed))
                                     except discord.Forbidden:
                                         print(f"(AFK module) Missing permissions to send DMs to user: {user_mention.id}")
 
@@ -178,12 +179,7 @@ class afk(commands.Cog):
             return await ctx.send(view=error_panel(f"{emojis.ICONS_WARNING} | You can't advertise Serve Invite in the AFK reason"))
 
         view = OnOrOff(ctx)
-        em = info_panel("Should I DM you on mentions?")
-        try:
-            em.set_author = lambda *a, **kw: None  # no-op, LayoutView doesn't have set_author
-        except:
-            pass
-        test = await ctx.reply(view=em)
+        test = await ctx.reply(content="Should I DM you on mentions?", view=view, mention_author=False)
         await view.wait()
 
         async with aiosqlite.connect(DB_PATH) as db:
@@ -203,6 +199,6 @@ class afk(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

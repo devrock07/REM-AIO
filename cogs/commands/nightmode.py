@@ -6,6 +6,7 @@ from discord.ext import commands
 import aiosqlite
 import os
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 # Database setup
 db_folder = 'db'
@@ -58,7 +59,7 @@ class Nightmode(commands.Cog):
             inline=False
         )
         nightmode_embed.set_thumbnail(url=self.bot.user.avatar.url)
-        await ctx.send(embed=nightmode_embed)
+        await ctx.send(view = embed_to_view(nightmode_embed))
 
     @nightmode.command(name="enable", help="Enable nightmode")
     @commands.has_permissions(administrator=True)
@@ -67,26 +68,26 @@ class Nightmode(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def enable_nightmode(self, ctx):
         if ctx.guild.member_count < 50:  
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.CROSSICON} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON} Access Denied",
                 color=self.color,
                 description='Your Server Doesn\'t Meet My 50 Member Criteria'
-            ))
+            )))
 
         own = ctx.author.id == ctx.guild.owner_id
         check = await self.is_extra_owner(ctx.author, ctx.guild)
         if not own and not check and ctx.author.id not in self.ricky:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.CROSSICON} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON} Access Denied",
                 color=self.color,
                 description='Only Server Owner Or Extraowner Can Run This Command.!'
-            ))
+            )))
 
         if not own and not (
             ctx.guild.me.top_role.position <= ctx.author.top_role.position
         ) and ctx.author.id not in self.ricky:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                 color=self.color,
                 description='Only Server Owner or Extraowner Having **Higher role than me can run this command**'
-            ))
+            )))
 
         bot_highest_role = ctx.guild.me.top_role
         manageable_roles = [
@@ -98,17 +99,17 @@ class Nightmode(commands.Cog):
         ]
 
         if not manageable_roles:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.CROSSICON}  Error",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON}  Error",
                 color=self.color,
                 description='No Roles Found With Admin Permissions'
-            ))
+            )))
 
         async with self.db.execute('SELECT guildId FROM Nightmode WHERE guildId = ?', (str(ctx.guild.id),)) as cursor:
             if await cursor.fetchone():
-                return await ctx.send(embed=discord.Embed(title=f"{emojis.CROSSICON}  Error",
+                return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON}  Error",
                     color=self.color,
                     description='Nightmode is already enabled.'
-                ))
+                )))
 
         async with self.db.cursor() as cursor:
             for role in manageable_roles:
@@ -125,10 +126,10 @@ class Nightmode(commands.Cog):
                     ''', (str(ctx.guild.id), str(role.id), int(admin_permissions.value)))
             await self.db.commit()
 
-        await ctx.send(embed=discord.Embed(title=f"{emojis.TICK} Success",
+        await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.TICK} Success",
             color=self.color,
             description='Nightmode enabled! Dangerous Permissions Disabled For Manageable Roles.'
-        ))
+        )))
 
     @nightmode.command(name="disable", help="Disable nightmode")
     @commands.has_permissions(administrator=True)
@@ -137,35 +138,35 @@ class Nightmode(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def disable_nightmode(self, ctx):
         if ctx.guild.member_count < 50:  
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                 color=self.color,
                 description='Your Server Doesn\'t Meet My 50 Member Criteria'
-            ))
+            )))
 
         own = ctx.author.id == ctx.guild.owner_id
         check = await self.is_extra_owner(ctx.author, ctx.guild)
         if not own and not check and ctx.author.id not in self.ricky:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                 color=self.color,
                 description='Only Server Owner Or Extraowner Can Run This Command.!'
-            ))
+            )))
 
         if not own and not (
             ctx.guild.me.top_role.position <= ctx.author.top_role.position
         ) and ctx.author.id not in self.ricky:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                 color=self.color,
                 description='Only Server Owner or Extraowner Having **Higher role than me can run this command**'
-            ))
+            )))
 
         async with self.db.execute('SELECT roleId, adminPermissions FROM Nightmode WHERE guildId = ?', (str(ctx.guild.id),)) as cursor:
             stored_roles = await cursor.fetchall()
 
         if not stored_roles:
-            return await ctx.send(embed=discord.Embed(title=f"{emojis.CROSSICON} Error",
+            return await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON} Error",
                 color=self.color,
                 description='Nightmode is not enabled.'
-            ))
+            )))
 
         async with self.db.cursor() as cursor:
             for role_id, admin_permissions in stored_roles:
@@ -177,14 +178,14 @@ class Nightmode(commands.Cog):
                     await cursor.execute('DELETE FROM Nightmode WHERE guildId = ? AND roleId = ?', (str(ctx.guild.id), role_id))
             await self.db.commit()
 
-        await ctx.send(embed=discord.Embed(title=f"{emojis.TICK} Success",
+        await ctx.send(view = embed_to_view(discord.Embed(title=f"{emojis.TICK} Success",
             color=self.color,
             description='Nightmode disabled! Restored Permissions For Manageable Roles.'
-        ))
+        )))
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

@@ -5,6 +5,7 @@ import aiosqlite
 import aiohttp
 import os
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DB_PATH = "db/vanity.db"
 
@@ -58,7 +59,7 @@ class VanityRoles(commands.Cog):
             description=f"Vanity: `{vanity}`\nRole: {role.mention}\nLog Channel: {channel.mention}",
             color=discord.Color.green()
         )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
     @vanityroles.command(name="show")
     @blacklist_check()
@@ -80,7 +81,7 @@ class VanityRoles(commands.Cog):
                 value=f"Role: {role.mention if role else role_id}\nLog: {channel.mention if channel else log_channel_id}",
                 inline=False
             )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
     @vanityroles.command(name="reset")
     @blacklist_check()

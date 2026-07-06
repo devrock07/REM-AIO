@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class EmergencyRestoreView(discord.ui.View):
     def __init__(self, ctx):
@@ -96,7 +97,7 @@ class Emergency(commands.Cog):
         embed.add_field(name=f"`{ctx.prefix}emergency role`", value="> Manage roles added to the emergency list. You can add/remove/list roles by emergency role group.", inline=False)
         embed.add_field(name=f"`{ctx.prefix}emergency-situation` or `{ctx.prefix}emgs`", value="> Execute emergency situation which disables dangerous permissions from roles in the emergency list & move the role with maximum member to top position below the bot top role. Restore disabled permissions of role using `emgrestore`.", inline=False)
         embed.set_footer(text="Use \"help emergency <subcommand>\" for more information.", icon_url=self.bot.user.avatar.url)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
 
     @emergency.command(name="enable", help="Enable emergency mode and add all roles with dangerous permissions.")
@@ -106,10 +107,10 @@ class Emergency(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.guild_only()
     async def enable(self, ctx):
-        Olympus = ['767979794411028491', '767979794411028491']
-        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in Olympus:
+        REM_BYPASS_IDS = ['767979794411028491', '767979794411028491']
+        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in REM_BYPASS_IDS:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="Only the server owner can enable emergency mode.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         dangerous_permissions = ["administrator", "ban_members", "kick_members", "manage_channels", "manage_roles", "manage_guild"]
         roles_added = []
@@ -140,7 +141,7 @@ class Emergency(commands.Cog):
         else:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="No new roles with dangerous permissions were found.", color=0x000000)
         
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
         
 
     @emergency.command(name="disable", help="Disable emergency mode and clear the emergency role list.")
@@ -150,17 +151,17 @@ class Emergency(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.guild_only()
     async def disable(self, ctx):
-        Olympus = ['767979794411028491', '767979794411028491']
-        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in Olympus:
+        REM_BYPASS_IDS = ['767979794411028491', '767979794411028491']
+        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in REM_BYPASS_IDS:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="Only the server owner can disable emergency mode.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("DELETE FROM emergency_roles WHERE guild_id = ?", (ctx.guild.id,))
             await db.commit()
 
         embed = discord.Embed(title=f"{emojis.TICK} Success", description="Emergency mode has been disabled, and all emergency roles have been cleared.", color=0x000000)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     
 
@@ -185,25 +186,25 @@ class Emergency(commands.Cog):
     async def authorise_add(self, ctx, member: discord.Member):
         if not await self.is_guild_owner(ctx):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="Only the server owner can add authorised users for executing emergency situation.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("SELECT COUNT(*) FROM authorised_users WHERE guild_id = ?", (ctx.guild.id,)) as cursor:
                 count = (await cursor.fetchone())[0]
             if count >= 5:
                 embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="Only up to 5 authorised users can be added.", color=0x000000)
-                return await ctx.reply(embed=embed)
+                return await ctx.reply(view = embed_to_view(embed))
 
             async with db.execute("SELECT 1 FROM authorised_users WHERE guild_id = ? AND user_id = ?", (ctx.guild.id, member.id)) as cursor:
                 if await cursor.fetchone():
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="This user is already authorised.", color=0x000000)
-                    return await ctx.reply(embed=embed)
+                    return await ctx.reply(view = embed_to_view(embed))
 
             await db.execute("INSERT INTO authorised_users (guild_id, user_id) VALUES (?, ?)", (ctx.guild.id, member.id))
             await db.commit()
 
         embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"**{member.display_name}** has been authorised to use `emergency-situation` command.", color=0x000000)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @authorise.command(name="remove", help="Removes a user from the authorised group")
     @blacklist_check()
@@ -214,19 +215,19 @@ class Emergency(commands.Cog):
     async def authorise_remove(self, ctx, member: discord.Member):
         if not await self.is_guild_owner(ctx):
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="Only the server owner can remove authorised users for emergency situation.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("SELECT 1 FROM authorised_users WHERE guild_id = ? AND user_id = ?", (ctx.guild.id, member.id)) as cursor:
                 if not await cursor.fetchone():
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="This user is not authorised.", color=0x000000)
-                    return await ctx.reply(embed=embed)
+                    return await ctx.reply(view = embed_to_view(embed))
 
             await db.execute("DELETE FROM authorised_users WHERE guild_id = ? AND user_id = ?", (ctx.guild.id, member.id))
             await db.commit()
 
         embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"**{member.display_name}** has been removed from the authorised list and can no more use `emergency-situation` command.", color=0x000000)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @authorise.command(name="list", aliases=["view", "config"], help="Lists all authorised users for emergency actions.")
     @blacklist_check()
@@ -237,7 +238,7 @@ class Emergency(commands.Cog):
     async def list_authorized(self, ctx):
         if not await self.is_guild_owner(ctx):
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="Only the server owner can view the list of authorised users for emergency situation.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         
         async with aiosqlite.connect('db/emergency.db') as db:
@@ -245,17 +246,17 @@ class Emergency(commands.Cog):
             authorized_users = await cursor.fetchall()
             
         if not authorized_users:
-            await ctx.reply(embed=discord.Embed(
+            await ctx.reply(view = embed_to_view(discord.Embed(
                 title="Authorized Users",
                 description="No authorized users found.",
-                color=0x000000))
+                color=0x000000)))
             return
                 
         description = "\n".join([f"{index + 1}. [{ctx.guild.get_member(user[0]).name}](https://discord.com/users/{user[0]}) - {user[0]}" for index, user in enumerate(authorized_users)])
-        await ctx.reply(embed=discord.Embed(
+        await ctx.reply(view = embed_to_view(discord.Embed(
             title="Authorized Users",
             description=description,
-            color=0x000000))
+            color=0x000000)))
 
     @emergency.group(name="role", help="Lists all the commands in the emergency role group.", invoke_without_command=True)
     @blacklist_check()
@@ -277,7 +278,7 @@ class Emergency(commands.Cog):
     async def role_add(self, ctx, role: discord.Role):
         if not await self.is_guild_owner(ctx):
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="Only the server owner can add role for emergency situation.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
 
         async with aiosqlite.connect(self.db_path) as db:
@@ -285,18 +286,18 @@ class Emergency(commands.Cog):
                 count = (await cursor.fetchone())[0]
             if count >= 25:
                 embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Error", description="Only up to 25 roles can be added.", color=0x000000)
-                return await ctx.reply(embed=embed)
+                return await ctx.reply(view = embed_to_view(embed))
 
             async with db.execute("SELECT 1 FROM emergency_roles WHERE guild_id = ? AND role_id = ?", (ctx.guild.id, role.id)) as cursor:
                 if await cursor.fetchone():
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="This role is already in the emergency list.", color=0x000000)
-                    return await ctx.reply(embed=embed)
+                    return await ctx.reply(view = embed_to_view(embed))
 
             await db.execute("INSERT INTO emergency_roles (guild_id, role_id) VALUES (?, ?)", (ctx.guild.id, role.id))
             await db.commit()
 
         embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"**{role.name}** has been **added** to the emergency list.", color=0x000000)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @role.command(name="remove", help="Removes a role from the emergency role list.")
     @blacklist_check()
@@ -307,19 +308,19 @@ class Emergency(commands.Cog):
     async def role_remove(self, ctx, role: discord.Role):
         if not await self.is_guild_owner(ctx):
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="Only the server owner can remove roles from emergency list.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("SELECT 1 FROM emergency_roles WHERE guild_id = ? AND role_id = ?", (ctx.guild.id, role.id)) as cursor:
                 if not await cursor.fetchone():
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description="This role is not in the emergency list.", color=0x000000)
-                    return await ctx.reply(embed=embed)
+                    return await ctx.reply(view = embed_to_view(embed))
 
             await db.execute("DELETE FROM emergency_roles WHERE guild_id = ? AND role_id = ?", (ctx.guild.id, role.id))
             await db.commit()
 
         embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"**{role.name}** has been removed from the emergency list.", color=0x000000)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @role.command(name="list", aliases=["view", "config"], help="Lists all roles added to the emergency list.")
     @blacklist_check()
@@ -330,7 +331,7 @@ class Emergency(commands.Cog):
     async def list_roles(self, ctx):
         if not await self.is_guild_owner_or_authorised(ctx):
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied", description="You are not authorised to view list of roles for emergency situation.", color=0x000000)
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         
         async with aiosqlite.connect('db/emergency.db') as db:
@@ -339,18 +340,18 @@ class Emergency(commands.Cog):
 
         if not roles:
             
-            await ctx.reply(embed=discord.Embed(
+            await ctx.reply(view = embed_to_view(discord.Embed(
                 title="Emergency Roles",
                 description="No roles added for emergency situation.",
-                color=0x000000))
+                color=0x000000)))
             return
 
         description = "\n".join([f"{index + 1}. <@&{role[0]}> - {role[0]}" for index, role in enumerate(roles)])
 
-        await ctx.reply(embed=discord.Embed(
+        await ctx.reply(view = embed_to_view(discord.Embed(
             title="Emergency Roles",
             description=description,
-            color=0x000000))
+            color=0x000000)))
 
 
     @commands.command(name="emergencysituation", help="Disable dangerous permissions from roles in the emergency list.", aliases=["emergency-situation", "emgs"])
@@ -361,16 +362,16 @@ class Emergency(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
     async def emergencysituation(self, ctx):
-        Olympus = ['767979794411028491', '767979794411028491']
+        REM_BYPASS_IDS = ['767979794411028491', '767979794411028491']
         guild_id = ctx.guild.id
 
-        if not await self.is_guild_owner_or_authorised(ctx) and str(ctx.author.id) not in Olympus:
-            return await ctx.reply(embed=discord.Embed(
+        if not await self.is_guild_owner_or_authorised(ctx) and str(ctx.author.id) not in REM_BYPASS_IDS:
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title=f"{emojis.ICONS_WARNING} Access Denied", 
                 description="You are not authorised to execute the emergency situation.", 
-                color=0x000000))
+                color=0x000000)))
 
-        processing_message = await ctx.send(embed=discord.Embed(title=" Processing Emergency Situation, wait for a while...", color=0x000000))
+        processing_message = await ctx.send(view = embed_to_view(discord.Embed(title=" Processing Emergency Situation, wait for a while...", color=0x000000)))
 
         antinuke_enabled = False
         async with aiosqlite.connect('db/anti.db') as anti:
@@ -394,10 +395,10 @@ class Emergency(commands.Cog):
 
         if not emergency_roles:
             await processing_message.delete()
-            return await ctx.reply(embed=discord.Embed(
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title=f"{emojis.CROSSICON} Error",
                 description="No roles have been added for the emergency situation.",
-                color=0x000000))
+                color=0x000000)))
 
         bot_highest_role = ctx.guild.me.top_role
         dangerous_permissions = [
@@ -461,26 +462,26 @@ class Emergency(commands.Cog):
             target_position = bot_highest_role.position - 1 
             try:
                 await most_mem.edit(position=target_position, reason="Emergency Situation: Role moved for safety")
-                await ctx.reply(embed=discord.Embed(
+                await ctx.reply(view = embed_to_view(discord.Embed(
                     title="Emergency Situation",
                     description=f"**{emojis.TICK} Roles Modified (Denied Dangerous Permissions)**:\n{success_message}\n\n**{emojis.ICONS_WARNING}  Role Moved**: {most_mem.mention} moved to a position below the bot's highest role.\n**Move back to its previous position soon after the server is not in risk.**\n\n** Errors**:\n{error_message}",
-                    color=0x000000))
+                    color=0x000000)))
             except discord.Forbidden:
-                await ctx.reply(embed=discord.Embed(
+                await ctx.reply(view = embed_to_view(discord.Embed(
                     title="Emergency Situation",
                     description=f"**{emojis.TICK} Roles Modified (Denied Dangerous Permissions)**:\n{success_message}\n\n**ℹ️ Role Couldn't Moved**: Failed to move the role {most_mem.mention} below the bot's highest role due to permissions error.\n**Move back to its previous position soon after the server is not in risk.**\n\n**Errors**:\n{error_message}",
-                    color=0x000000))
+                    color=0x000000)))
 
             except Exception as e:
-                await ctx.reply(embed=discord.Embed(
+                await ctx.reply(view = embed_to_view(discord.Embed(
                     title="Emergency Situation",
                     description=f"**{emojis.TICK} Roles Modified (Denied Dangerous Permissions)**:\n{success_message}\n\n**ℹ️ Role Couldn't Moved**: An unexpected error occurred while moving the role: {str(e)}.\n**Move back to its previous position soon after the server is not in risk.**\n\n** Errors**:\n{error_message}",
-                    color=0x000000)) 
+                    color=0x000000))) 
         else:
-            await ctx.reply(embed=discord.Embed(
+            await ctx.reply(view = embed_to_view(discord.Embed(
                 title="Emergency Situation",
                 description=f"**{emojis.TICK} Roles Modified (Denied Dangerous Permissions)**:\n{success_message}\n\n**<Errors**:\n{error_message}",
-                color=0x000000))
+                color=0x000000)))
 
         if antinuke_enabled:
             async with aiosqlite.connect('db/anti.db') as anti:
@@ -498,22 +499,22 @@ class Emergency(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
     async def emergencyrestore(self, ctx):
-        Olympus = ['767979794411028491', '767979794411028491']
-        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in Olympus:
-            return await ctx.reply(embed=discord.Embed(
+        REM_BYPASS_IDS = ['767979794411028491', '767979794411028491']
+        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in REM_BYPASS_IDS:
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title=f"{emojis.ICONS_WARNING} Access Denied", 
                 description="Only the server owner can execute the emergency restore command.", 
-                color=0x000000))
+                color=0x000000)))
 
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute("SELECT role_id, disabled_perms FROM restore_roles WHERE guild_id = ?", (ctx.guild.id,))
             restore_roles = await cursor.fetchall()
 
         if not restore_roles:
-            return await ctx.reply(embed=discord.Embed(
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title=f"{emojis.CROSSICON} Error",
                 description="No roles were found with disabled permissions for restore.",
-                color=0x000000))
+                color=0x000000)))
 
         confirmation_embed = discord.Embed(
             title="Confirm Restoration",
@@ -521,21 +522,21 @@ class Emergency(commands.Cog):
             color=0x000000
         )
         view = EmergencyRestoreView(ctx)
-        await ctx.send(embed=confirmation_embed, view=view)
+        await ctx.send(view = embed_to_view(confirmation_embed, view = view))
 
         await view.wait()
 
         if view.value is None:
-            return await ctx.reply(embed=discord.Embed(
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title="Restore Cancelled",
                 description="The restore process timed out.",
-                color=0x000000))
+                color=0x000000)))
 
         if view.value is False:
-            return await ctx.reply(embed=discord.Embed(
+            return await ctx.reply(view = embed_to_view(discord.Embed(
                 title="Restore Cancelled",
                 description="Restoring permissions to roles has been cancelled.",
-                color=0x000000))
+                color=0x000000)))
 
         modified_roles = []
         unchanged_roles = []
@@ -575,14 +576,14 @@ class Emergency(commands.Cog):
         else:
             error_message = "No roles had permission errors."
 
-        await ctx.reply(embed=discord.Embed(
+        await ctx.reply(view = embed_to_view(discord.Embed(
             title="Emergency Restore",
             description=f"**{emojis.TICK} Permissions Restored**:\n{success_message}\n\n**{emojis.ML_CROSS} Errors**:\n{error_message}\n\n Database of previously disabled permissions has been cleared.",
-            color=0x000000))
+            color=0x000000)))
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

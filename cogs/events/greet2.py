@@ -4,6 +4,7 @@ import json
 import re
 import asyncio
 from discord.ext import commands
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class greet(commands.Cog):
     def __init__(self, bot):
@@ -86,7 +87,7 @@ class greet(commands.Cog):
                         embed.set_thumbnail(url=await self.safe_format(embed_info["thumbnail"], placeholders))
                     if embed_info.get("image"):
                         embed.set_image(url=await self.safe_format(embed_info["image"], placeholders))
-                    sent_message = await welcome_channel.send(content=content, embed=embed)
+                    sent_message = await welcome_channel.send(content=content, view = embed_to_view(embed))
                 if auto_delete_duration:
                     await sent_message.delete(delay=auto_delete_duration)
             except discord.Forbidden:

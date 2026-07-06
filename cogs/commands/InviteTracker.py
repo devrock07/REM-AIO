@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 from datetime import datetime, timezone
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DB_FILE = "db/invite_tracker.db"
 
@@ -170,7 +171,7 @@ class InviteTracker(commands.Cog):
         embed.add_field(name="Fake", value=fake, inline=True)
         embed.add_field(name="Leaves", value=leaves, inline=True)
         embed.add_field(name="Rejoins", value=rejoins, inline=True)
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @commands.command(name="inviteleaderboard")
     async def inviteleaderboard(self, ctx):
@@ -186,7 +187,7 @@ class InviteTracker(commands.Cog):
             name = user.name if user else f"<@{user_id}>"
             embed.add_field(name=f"#{i} {name}", value=f"{count} invites", inline=False)
 
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @commands.command(name="resetinvites")
     @commands.has_permissions(administrator=True)

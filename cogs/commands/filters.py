@@ -3,6 +3,7 @@ from discord.ext import commands
 from typing import Union
 import wavelink
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class FilterCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -51,7 +52,7 @@ class FilterCog(commands.Cog):
 
         await player.set_filters(filters)
         self.active_filters[ctx.guild.id] = filter_name
-        await ctx.send(embed=discord.Embed(description=f"Filter set to **{filter_name}**.", color=discord.Color.green()))
+        await ctx.send(view = embed_to_view(discord.Embed(description=f"Filter set to **{filter_name}**.", color=discord.Color.green())))
 
     @commands.hybrid_group(invoke_without_command=True)
     @blacklist_check()
@@ -111,7 +112,7 @@ class FilterCog(commands.Cog):
         current_filter = self.active_filters.get(ctx.guild.id, "None")
         embed = discord.Embed(title="Enable Filter", description="Choose a filter to apply:", color=discord.Color.blue())
         embed.add_field(name="Current Filter", value=current_filter, inline=False)
-        await ctx.send(embed=embed, view=view)
+        await ctx.send(view = embed_to_view(embed, view = view))
 
     @filter.command(help="Disable the current filter.")
     @blacklist_check()
@@ -130,5 +131,5 @@ class FilterCog(commands.Cog):
         filters = wavelink.Filters()
         await player.set_filters(filters)
         self.active_filters.pop(ctx.guild.id, None)
-        await ctx.send(embed=discord.Embed(description="Filter disabled.", color=discord.Color.red()))
+        await ctx.send(view = embed_to_view(discord.Embed(description="Filter disabled.", color=discord.Color.red())))
 

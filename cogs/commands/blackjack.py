@@ -5,6 +5,7 @@ import random
 from typing import List, Tuple, Union
 from PIL import Image
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 CARDS_PATH = 'data/cards/'
 
@@ -125,7 +126,7 @@ class Blackjack(commands.Cog):
                 embed = discord.Embed(**kwargs)
                 file = discord.File(f"data/{ctx.author.id}.png", filename=f"{ctx.author.id}.png")
                 embed.set_image(url=f"attachment://{ctx.author.id}.png")
-                msg: discord.Message = await ctx.send(file=file, embed=embed)
+                msg: discord.Message = await ctx.send(file=file, view = embed_to_view(embed))
                 return msg
 
             def check(reaction: discord.Reaction, user: Union[discord.Member, discord.User]) -> bool:
@@ -218,6 +219,6 @@ class Blackjack(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out support or DM me.
 """

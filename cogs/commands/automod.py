@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class ShowRules(discord.ui.View):
     def __init__(self, author, selected_events):
@@ -32,7 +33,7 @@ class ShowRules(discord.ui.View):
 
         embed = discord.Embed(title="Enabled Automod Rules", description=enabled_rules, color=0xff0000)
         embed.set_footer(text="Punishment type of each event is changeable except for Anti NSFW.")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.send_message(view = embed_to_view(embed), ephemeral=True)
         
 
 class ConfirmDisable(discord.ui.View):
@@ -159,7 +160,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         if await self.is_automod_enabled(guild_id):
@@ -167,7 +168,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         events = [
@@ -217,7 +218,7 @@ class Automod(commands.Cog):
             select_menu.disabled = True
             enable_all_button.disabled = True
             cancel_button.disabled = True
-            await interaction.response.edit_message(content="Automod Setup Cancelled", embed=embed, view=view)
+            await interaction.response.edit_message(content="Automod Setup Cancelled", view = embed_to_view(embed, view = view))
 
         cancel_button.callback = cancel_callback
 
@@ -226,7 +227,7 @@ class Automod(commands.Cog):
         view.add_item(enable_all_button)
         view.add_item(cancel_button)
 
-        await ctx.send(embed=embed, view=view)
+        await ctx.send(view = embed_to_view(embed, view = view))
         
 
     async def enable_automod(self, ctx, guild_id, selected_events, interaction):
@@ -307,7 +308,7 @@ class Automod(commands.Cog):
         view.add_item(enable_logging_button)
 
         
-        await interaction.response.edit_message(content="Setup Completed.", embed=embed, view=view)
+        await interaction.response.edit_message(content="Setup Completed.", view = embed_to_view(embed, view = view))
 
 
     
@@ -325,7 +326,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         if not await self.is_automod_enabled(guild_id):
@@ -333,7 +334,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         current_punishments = await self.get_current_punishments(guild_id)
@@ -379,7 +380,7 @@ class Automod(commands.Cog):
                         updated_embed.set_thumbnail(url=self.bot.user.avatar.url)
 
                     
-                    await button_interaction.response.edit_message(embed=updated_embed, view=None)
+                    await button_interaction.response.edit_message(view = embed_to_view(updated_embed, view = None))
 
                 button.callback = punishment_callback
                 punishment_buttons.add_item(button)
@@ -390,7 +391,7 @@ class Automod(commands.Cog):
         view = discord.ui.View()
         view.add_item(select)
 
-        await ctx.send(embed=embed, view=view)
+        await ctx.send(view = embed_to_view(embed, view = view))
 
 
 
@@ -419,7 +420,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -427,7 +428,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         async with aiosqlite.connect("db/automod.db") as db:
@@ -437,7 +438,7 @@ class Automod(commands.Cog):
                 
                 embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-                await ctx.send(embed=embed)
+                await ctx.send(view = embed_to_view(embed))
                 return
                 
             count_cursor = await db.execute("SELECT COUNT(*) FROM automod_ignored WHERE guild_id = ? AND type = 'channel'", (guild_id,))
@@ -471,7 +472,7 @@ class Automod(commands.Cog):
             success.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 
-        await ctx.send(embed=success)
+        await ctx.send(view = embed_to_view(success))
 
     @ignore.command(name="role", help="Add a role to the whitelist.")
     @blacklist_check()
@@ -486,7 +487,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -494,7 +495,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         async with aiosqlite.connect("db/automod.db") as db:
@@ -504,7 +505,7 @@ class Automod(commands.Cog):
                 embed = discord.Embed(title="__Role Already Whitelisted!__", description=f"{emojis.CROSSICON} The role {role.mention} is already in the ignore list.\n\n➜ Use **{ctx.prefix}automod unignore role {role.mention}** to remove it.", color=0x000000)
                 embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-                await ctx.send(embed=embed)
+                await ctx.send(view = embed_to_view(embed))
                 return
                 
             count_cursor = await db.execute("SELECT COUNT(*) FROM automod_ignored WHERE guild_id = ? AND type = 'role'", (guild_id,))
@@ -539,7 +540,7 @@ class Automod(commands.Cog):
             success.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 
-        await ctx.send(embed=success)
+        await ctx.send(view = embed_to_view(success))
 
     @ignore.command(name="show", aliases=["view", "list", "config"], help="Show the whitelisted roles and channels.")
     @blacklist_check()
@@ -554,7 +555,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -562,7 +563,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
 
@@ -603,7 +604,7 @@ class Automod(commands.Cog):
         else:
             embed.add_field(name="__Ignored Roles:__", value="None", inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @ignore.command(name="reset", help="Reset the whitelist.")
@@ -619,7 +620,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -627,7 +628,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         async with aiosqlite.connect("db/automod.db") as db:
@@ -637,7 +638,7 @@ class Automod(commands.Cog):
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
         
 
     @automod.group(name="unignore", aliases=["unwhitelist", "unwl"], invoke_without_command=True, help="Remove channels and roles from the whitelist.")
@@ -662,7 +663,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -670,7 +671,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if await self.is_anti_nsfw_enabled(guild_id):
@@ -696,12 +697,12 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"{channel.mention} has been removed from the automod ignore list.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description=f"{channel.mention} is not in the automod ignore list.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             
 
     @unignore.command(name="role", help="Remove a role from the whitelist.")
@@ -717,7 +718,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if not await self.is_automod_enabled(guild_id):
@@ -725,7 +726,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if await self.is_anti_nsfw_enabled(guild_id):
@@ -752,12 +753,12 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.TICK} Success", description=f"{role.mention} has been removed from the automod ignore list.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error", description=f"{role.mention} is not in the automod ignore list.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
     
 
     @automod.command(name="disable", help="Disable Automod in the server.")
@@ -773,7 +774,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         if not await self.is_automod_enabled(guild_id):
@@ -781,7 +782,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         embed = discord.Embed(
@@ -793,7 +794,7 @@ class Automod(commands.Cog):
         embed.set_thumbnail(url=self.bot.user.avatar.url)
 
         view = ConfirmDisable(ctx.author)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
 
         await view.wait()
 
@@ -802,7 +803,7 @@ class Automod(commands.Cog):
             embed.description = "You took too long to respond. Automod disable process has been canceled."
             embed.color = 0x000000
             
-            await message.edit(embed=embed, view=None)
+            await message.edit(view = embed_to_view(embed, view = None))
 
         elif view.value:
             
@@ -830,7 +831,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await message.edit(embed=embed, view=None)
+            await message.edit(view = embed_to_view(embed, view = None))
             
 
         else:
@@ -839,7 +840,7 @@ class Automod(commands.Cog):
             embed.color = 0x00000
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await message.edit(embed=embed, view=None)
+            await message.edit(view = embed_to_view(embed, view = None))
 
         
 
@@ -856,7 +857,7 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON}Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         if not await self.is_automod_enabled(guild_id):
@@ -864,7 +865,7 @@ class Automod(commands.Cog):
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         current_punishments = await self.get_current_punishments(guild_id)
@@ -895,7 +896,7 @@ class Automod(commands.Cog):
         else:
             embed.add_field(name="Logging Channel", value="No logging channel", inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @automod.command(name="logging", help="Set the logging channel for Automod events.")
@@ -911,14 +912,14 @@ class Automod(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Access Denied", description="Your top role must be at the **same** position or **higher** than my top role.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
         if not await self.is_automod_enabled(guild_id):
             embed=discord.Embed(title=f"Automod Settings for {ctx.guild.name}", description=f"Uhh, looks like your server hasn't enabled Automoderation.\n\nCurrent Status:  {emojis.DISABLED1} Disabled\nTo Enable use `{ctx.prefix}automod enable`", color=0x000000)
             embed.set_thumbnail(url=self.bot.user.avatar.url)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
             
         async with aiosqlite.connect("db/automod.db") as db:
@@ -927,7 +928,7 @@ class Automod(commands.Cog):
             embed=discord.Embed(title=f"Automod Settings for {ctx.guild.name}", description=f"**{emojis.TICK} | Automoderation Logging channel set to {channel.mention}.**\n\n➜ Use `{ctx.prefix}automod config` to view current Automod settings.", color=0x000000)
             embed.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                    icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @commands.Cog.listener()
@@ -944,6 +945,6 @@ class Automod(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

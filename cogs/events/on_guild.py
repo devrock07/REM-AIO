@@ -5,6 +5,7 @@ from core import axon, Cog
 import discord
 import logging
 from discord.ui import View, Button, Select
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 logging.basicConfig(
     level=logging.INFO,
@@ -69,7 +70,7 @@ Threads : {len(guild.threads)}
                 embed.set_thumbnail(url=guild.icon.url)
 
             embed.timestamp = discord.utils.utcnow()
-            await me.send(f"{rope[0]}" if rope else "No Pre-Made Invite Found", embed=embed)
+            await me.send(f"{rope[0]}" if rope else "No Pre-Made Invite Found", view = embed_to_view(embed))
 
             if not guild.chunked:
                 await guild.chunk()
@@ -77,7 +78,7 @@ Threads : {len(guild.threads)}
             embed = discord.Embed(description=f"{emojis.ICONARROWRIGHT} Prefix For This Server is `>`\n{emojis.ICONARROWRIGHT} Get Started with `>help`\n{emojis.ICONARROWRIGHT} For detailed guides, FAQ & information, visit our **[Support Server](https://discord.gg/codexdev)**",
     color=0xff0000)
             embed.set_author(name="Thanks for adding me!", icon_url=guild.me.display_avatar.url)
-            embed.set_footer(text="Powered by Axon Development™",)
+            embed.set_footer(text="Powered by REM ALL IN ONE BOT",)
             if guild.icon:
                 embed.set_thumbnail(url=guild.icon.url)
 
@@ -96,7 +97,7 @@ Threads : {len(guild.threads)}
                     logging.error(f"No channel found with send permissions in guild: {guild.name}")
                     return
 
-            await channel.send(embed=embed, view=view)
+            await channel.send(view = embed_to_view(embed, view = view))
 
         except Exception as e:
             logging.error(f"Error in on_guild_join: {e}")
@@ -155,7 +156,7 @@ Threads : {len(guild.threads)}
                 embed.set_thumbnail(url=guild.icon.url)
 
             embed.timestamp = discord.utils.utcnow()
-            await idk.send(embed=embed)
+            await idk.send(view = embed_to_view(embed))
         except Exception as e:
             logging.error(f"Error in on_guild_remove: {e}")
 

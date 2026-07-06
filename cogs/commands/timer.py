@@ -4,6 +4,7 @@ from discord.ext import commands
 import asyncio
 from utils.Tools import *
 from datetime import datetime
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Timer(commands.Cog):
     def __init__(self, bot):
@@ -36,7 +37,7 @@ class Timer(commands.Cog):
                     color=0x000000
                 )
                 embed.set_footer(text=f'Requested by {ctx.author.name}')
-                message = await ctx.send(embed=embed)
+                message = await ctx.send(view = embed_to_view(embed))
                 await message.add_reaction('⏱️')
             elif time >= 60:
                 embed = discord.Embed(
@@ -45,7 +46,7 @@ class Timer(commands.Cog):
                     color=0x000000
                 )
                 embed.set_footer(text=f'Requested by {ctx.author.name}')
-                message = await ctx.send(embed=embed)
+                message = await ctx.send(view = embed_to_view(embed))
                 await message.add_reaction('⏱️')
             elif time < 60:
                 embed = discord.Embed(
@@ -54,7 +55,7 @@ class Timer(commands.Cog):
                     color=0x000000
                 )
                 embed.set_footer(text=f'Requested by {ctx.author.name}')
-                message = await ctx.send(embed=embed)
+                message = await ctx.send(view = embed_to_view(embed))
                 await message.add_reaction('⏱️')
             while True:
                 try:
@@ -67,7 +68,7 @@ class Timer(commands.Cog):
                             color=0x000000
                         )
                         embed.set_footer(text=f'Requested by {ctx.author.name}')
-                        await message.edit(embed=embed)
+                        await message.edit(view = embed_to_view(embed))
                     elif time >= 60:
                         embed = discord.Embed(
                             title=f'{title}',
@@ -75,7 +76,7 @@ class Timer(commands.Cog):
                             color=0x000000
                         )
                         embed.set_footer(text=f'Requested by {ctx.author.name}')
-                        await message.edit(embed=embed)
+                        await message.edit(view = embed_to_view(embed))
                     elif time < 60:
                         embed = discord.Embed(
                             title=f'{title}',
@@ -83,7 +84,7 @@ class Timer(commands.Cog):
                             color=0x000000
                         )
                         embed.set_footer(text=f'Requested by {ctx.author.name}')
-                        await message.edit(embed=embed)
+                        await message.edit(view = embed_to_view(embed))
                     if time <= 0:
                         embed = discord.Embed(
                             title=f'{title}',
@@ -91,7 +92,7 @@ class Timer(commands.Cog):
                             color=0x000000
                         )
                         content= ctx.author.mention
-                        await message.edit(content=content, embed=embed)
+                        await message.edit(content=content, view = embed_to_view(embed))
                         m = await ctx.channel.get_message(message.id)
                         list_thingy = []
                         output_list_thingy = []
@@ -114,6 +115,6 @@ class Timer(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

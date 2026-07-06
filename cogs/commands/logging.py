@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 from datetime import datetime
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DB_FILE = "logging.db"
 
@@ -54,12 +55,12 @@ class Logging(commands.Cog):
         if channel_id:
             channel = guild.get_channel(channel_id)
             if channel:
-                await channel.send(embed=embed)
+                await channel.send(view = embed_to_view(embed))
 
     @commands.command(name="loggingsetup")
     @commands.has_permissions(administrator=True)
     async def setlogsetup(self, ctx):
-        """Creates Axon-logging category and log channels with private permissions"""
+        """Creates REM logging category and log channels with private permissions"""
         guild = ctx.guild
 
         overwrites = {
@@ -67,9 +68,9 @@ class Logging(commands.Cog):
             guild.me: discord.PermissionOverwrite(view_channel=True, send_messages=True)
         }
 
-        category = discord.utils.get(guild.categories, name="Axon-logging")
+        category = discord.utils.get(guild.categories, name="rem-logging")
         if not category:
-            category = await guild.create_category("Axon-logging", overwrites=overwrites)
+            category = await guild.create_category("rem-logging", overwrites=overwrites)
 
         for name, log_type in LOG_CHANNELS.items():
             channel = discord.utils.get(guild.text_channels, name=name)
@@ -77,12 +78,12 @@ class Logging(commands.Cog):
                 channel = await guild.create_text_channel(name=name, category=category, overwrites=overwrites)
             self.set_log_channel(guild.id, log_type, channel.id)
 
-        await ctx.send("✅ Logging channels created privately under 'Axon-logging'.")
+        await ctx.send("✅ Logging channels created privately under 'rem-logging'.")
 
     @commands.command(name="removelogs")
     @commands.has_permissions(administrator=True)
     async def removelogs(self, ctx):
-        """Removes Axon-logging channels and logging DB config"""
+        """Removes REM logging channels and logging DB config"""
         guild = ctx.guild
 
         # Remove DB entries
@@ -91,13 +92,13 @@ class Logging(commands.Cog):
             conn.commit()
 
         # Delete channels and category
-        category = discord.utils.get(guild.categories, name="Axon-logging")
+        category = discord.utils.get(guild.categories, name="rem-logging")
         if category:
             for channel in category.channels:
                 await channel.delete()
             await category.delete()
 
-        await ctx.send("🗑️ Logging channels and category 'Axon-logging' have been removed.")
+        await ctx.send("🗑️ Logging channels and category 'rem-logging' have been removed.")
 
     # === Events ===
 

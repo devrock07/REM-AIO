@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import sqlite3
 from datetime import datetime, timedelta
 import re
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DB_FILE = "db/jail.db"
 
@@ -112,7 +113,7 @@ class Jail(commands.Cog):
                 embed.add_field(name="User", value=member.mention)
                 embed.timestamp = datetime.utcnow()
                 embed.set_footer(text=f"{guild.name}")
-                await log_channel.send(embed=embed)
+                await log_channel.send(view = embed_to_view(embed))
 
     @commands.command(name="jail")
     @commands.has_permissions(manage_roles=True)
@@ -164,7 +165,7 @@ class Jail(commands.Cog):
                 embed.add_field(name="Reason", value=reason, inline=False)
                 embed.add_field(name="Duration", value=duration or "Permanent", inline=False)
                 embed.timestamp = datetime.utcnow()
-                await log_channel.send(embed=embed)
+                await log_channel.send(view = embed_to_view(embed))
 
     @commands.command(name="unjail")
     @commands.has_permissions(manage_roles=True)
@@ -189,7 +190,7 @@ class Jail(commands.Cog):
             embed.add_field(name="Jailed At", value=jailed_time.strftime("%Y-%m-%d %H:%M:%S UTC"))
             embed.add_field(name="Duration", value=f"{duration // 60} minutes" if duration else "Permanent")
             embed.add_field(name="Jailed By", value=mod.mention if mod else "Unknown")
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
         else:
             await ctx.send(f"❌ No jail record found for {member.mention}")
 

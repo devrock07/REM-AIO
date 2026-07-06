@@ -5,6 +5,7 @@ from discord.ext import commands
 import aiosqlite
 import asyncio
 from datetime import timedelta
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class AntiCaps(commands.Cog):
     def __init__(self, bot):
@@ -57,7 +58,7 @@ class AntiCaps(commands.Cog):
                 avatar_url = user.avatar.url if user.avatar else user.default_avatar.url
                 embed.set_thumbnail(url=avatar_url)
                 embed.timestamp=discord.utils.utcnow()
-                await log_channel.send(embed=embed)
+                await log_channel.send(view = embed_to_view(embed))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -112,7 +113,7 @@ class AntiCaps(commands.Cog):
                     simple_embed.description = f"{emojis.TICK} | {user.mention} has been successfully **{action_taken}** for **Excessive caps.**"
                     
                     simple_embed.set_footer(text="Use the “automod logging” command to get automod logs if it is not enabled.", icon_url=self.bot.user.avatar.url)
-                    await channel.send(embed=simple_embed, delete_after=30)
+                    await channel.send(view = embed_to_view(simple_embed), delete_after=30)
 
                     await self.log_action(guild, user, channel, action_taken, reason)
 

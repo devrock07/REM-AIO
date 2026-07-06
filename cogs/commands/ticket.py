@@ -6,6 +6,7 @@ from discord import app_commands
 import asyncio
 import io
 from datetime import datetime
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 EMOJI_DOT = f"{emojis.BLUEDOT}"  # Replace with your emoji
 
@@ -42,7 +43,7 @@ class EmbedEditModal(discord.ui.Modal, title="Edit Ticket Embed"):
             embed.set_image(url=self.image_input.value)
 
         self.view.embed = embed
-        await interaction.response.edit_message(embed=embed, view=self.view)
+        await interaction.response.edit_message(view = embed_to_view(embed, view = self.view))
 
 class AddOptionModal(discord.ui.Modal, title="Add Ticket Option"):
     def __init__(self, view):
@@ -64,7 +65,7 @@ class AddOptionModal(discord.ui.Modal, title="Add Ticket Option"):
             "emoji": emoji,
             "staff_role": int(self.staff_role.value)
         })
-        await interaction.response.edit_message(content="Option added.", embed=self.view.embed, view=self.view)
+        await interaction.response.edit_message(content="Option added.", view = embed_to_view(self.view.embed, view = self.view))
 
 class TicketSetupView(discord.ui.View):
     def __init__(self, bot, author):
@@ -154,14 +155,14 @@ class TicketSetupView(discord.ui.View):
             )
 
             view = TicketView(i.user)
-            await ticket_channel.send(content=f"{i.user.mention} {role.mention if role else ''}", embed=ticket_embed, view=view)
+            await ticket_channel.send(content=f"{i.user.mention} {role.mention if role else ''}", view = embed_to_view(ticket_embed, view = view))
             await i.response.send_message(f"Ticket created: {ticket_channel.mention}", ephemeral=True)
 
         select.callback = ticket_callback
 
         view = discord.ui.View()
         view.add_item(select)
-        await self.channel.send(embed=self.embed, view=view)
+        await self.channel.send(view = embed_to_view(self.embed, view = view))
         await interaction.followup.send("Ticket panel sent!", ephemeral=True)
 
 class TicketView(discord.ui.View):
@@ -210,7 +211,7 @@ class TicketSystem(commands.Cog):
     @app_commands.command(name="ticketsetup", description="Create and send a custom ticket panel")
     async def ticketsetup(self, interaction: discord.Interaction):
         view = TicketSetupView(self.bot, interaction.user)
-        await interaction.response.send_message(embed=view.embed, view=view, ephemeral=True)
+        await interaction.response.send_message(view = embed_to_view(view.embed, view = view), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(TicketSystem(bot))

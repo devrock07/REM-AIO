@@ -7,6 +7,7 @@ from utils.Tools import *
 from utils.config import BotName, serverLink
 from discord.ext import commands
 from discord.ui import Button, View
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Autorole(Cog):
     def __init__(self, bot: axon):
@@ -24,16 +25,14 @@ class Autorole(Cog):
                 embed.set_thumbnail(url=entry.user.avatar.url if entry.user.avatar else entry.user.default_avatar.url)
                 embed.set_author(name=f"{guild.name}", icon_url=guild.me.display_avatar.url)
                
-                website_button = Button(label='Website', style=discord.ButtonStyle.link, url='https://axon-x.vercel.app')
                 support_button = Button(label='Support', style=discord.ButtonStyle.link, url='https://discord.gg/codexdev')
                 vote_button = Button(label='Vote for Me', style=discord.ButtonStyle.link, url=f'https://top.gg/bot/{self.bot.user.id}/vote')
                 view = View()
                 view.add_item(support_button)
-                view.add_item(website_button)
                 #view.add_item(vote_button)
                 if guild.icon:
                     embed.set_author(name=guild.name, icon_url=guild.icon.url)
                 try:
-                    await entry.user.send(embed=embed, view=view)
+                    await entry.user.send(view = embed_to_view(embed, view = view))
                 except Exception as e:
                     print(e)

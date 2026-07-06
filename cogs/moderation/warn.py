@@ -6,6 +6,7 @@ from discord import ui
 import aiosqlite
 import asyncio
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 class WarnView(ui.View):
@@ -140,7 +141,7 @@ class Warn(commands.Cog):
             embed.timestamp = discord.utils.utcnow()
 
             view = WarnView(user=user, author=ctx.author)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
         except Exception as e:
             await ctx.send(f"An error occurred: {str(e)}")
@@ -165,7 +166,7 @@ class Warn(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             embed.timestamp = discord.utils.utcnow()
 
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
         except Exception as e:
             await ctx.send(f"An error occurred: {str(e)}")
             print(f"Error during clearwarns command: {e}")
@@ -174,6 +175,6 @@ class Warn(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

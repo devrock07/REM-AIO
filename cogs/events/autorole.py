@@ -41,7 +41,7 @@ class Autorole2(Cog):
             role = member.guild.get_role(role_id)
             if role:
                 try:
-                    await member.add_roles(role, reason="Axon X Autoroles")
+                    await member.add_roles(role, reason="REM ALL IN ONE BOT Autoroles")
                 except discord.Forbidden:
                     print(f"Bot lacks permissions to add role in a guild during Autorole Event .")
                 except discord.HTTPException as e:
@@ -51,11 +51,11 @@ class Autorole2(Cog):
                             retry_after = float(retry_after)
                             print(f"(Autorole) Rate limit encountered. Retrying after {retry_after} seconds.")
                             await asyncio.sleep(retry_after)
-                            await member.add_roles(role, reason="Axon X  Autoroles")
+                            await member.add_roles(role, reason="REM ALL IN ONE BOT  Autoroles")
                 except discord.errors.RateLimited as e:
                     print(f"Rate limit encountered: {e}. Retrying in {e.retry_after} seconds.")
                     await asyncio.sleep(e.retry_after)
-                    await member.add_roles(role, reason="Axon X  Autoroles")
+                    await member.add_roles(role, reason="REM ALL IN ONE BOT  Autoroles")
                 except Exception as e:
                     logger.error(f"Unexpected error in Autorole: {e}")
 
