@@ -18,7 +18,7 @@ logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
 )
-log = logging.getLogger("axon")
+log = logging.getLogger("rem")
 
 TOKEN = (os.getenv("TOKEN") or "").strip()
 COMMAND_LOG_WEBHOOK_URL = os.getenv("COMMAND_LOG_WEBHOOK_URL")
@@ -84,7 +84,7 @@ async def on_command_completion(context: commands.Context) -> None:
 
 @app.route("/")
 def home():
-    return "Axon X is online"
+    return "REM ALL IN ONE BOT is online"
 
 
 def run_keep_alive():

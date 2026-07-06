@@ -104,18 +104,18 @@ async def topgg():
     footer_time = footer_time_india.strftime('%d/%m/%Y %I:%M %p')
 
     webhook_data = {
-        "username": "Olympus",
+        "username": "REM ALL IN ONE BOT",
         "content": f"<@{user_id}> voted for <@1144179659735572640>!",
         "embeds": [
             {
-                "description": "**[Voted Olympus](https://top.gg/bot/1144179659735572640)**\n💖 Thank you for voting for Olympus on Top.gg, your support means everything to us!\n",
+                "description": "**[Voted REM ALL IN ONE BOT](https://top.gg/bot/1144179659735572640)**\n💖 Thank you for voting for REM ALL IN ONE BOT on Top.gg, your support means everything to us!\n",
                 "fields": [
                     {"name": "⏰ Time left to vote again:", "value": f"<t:{int(timestamp)}:R>\n‎ \n", "inline": True},
                     {"name": "📊 Total votes:", "value": f"{total_votes}", "inline": True},
                     {"name": "🏆 Current Streak:", "value": f"{streak}", "inline": True},
                 ],
                 "footer": {
-                    "text": f"Voter ID: {user_id} | Olympus Development™ | {footer_time}",
+                    "text": f"Voter ID: {user_id} | REM ALL IN ONE BOT | {footer_time}",
                     "icon_url": "https://cdn.discordapp.com/icons/699587669059174461/f689b4366447d5a23eda8d0ec749c1ba.png?size=1024"
                 },
                 "thumbnail": {

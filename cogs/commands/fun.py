@@ -346,7 +346,7 @@ class Fun(commands.Cog):
           )
 
           embed.set_footer(
-            text=f'Made by axon Development™',
+            text=f'Made by REM ALL IN ONE BOT',
             icon_url=self.bot.user.avatar
           )
 

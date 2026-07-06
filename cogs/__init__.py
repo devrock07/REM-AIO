@@ -187,4 +187,4 @@ async def setup(bot: axon):
         loaded_names.add(name)
         print(Fore.BLUE + Style.BRIGHT + f"Loaded cog: {name}")
 
-    print(Fore.BLUE + Style.BRIGHT + "All Axon Cogs loaded successfully.")
+    print(Fore.BLUE + Style.BRIGHT + "All REM cogs loaded successfully.")
