@@ -67,11 +67,33 @@ def _copy_view_items(target: discord.ui.LayoutView, source: Optional[discord.ui.
     if source is None:
         return
 
+    button_row: list[discord.ui.Item] = []
+
+    def flush_buttons() -> None:
+        nonlocal button_row
+        if button_row:
+            target.add_item(discord.ui.ActionRow(*button_row))
+            button_row = []
+
     for child in list(getattr(source, "children", ())):
+        if isinstance(child, discord.ui.Button):
+            button_row.append(child)
+            if len(button_row) == 5:
+                flush_buttons()
+            continue
+
+        if isinstance(child, discord.ui.select.BaseSelect):
+            flush_buttons()
+            target.add_item(discord.ui.ActionRow(child))
+            continue
+
+        flush_buttons()
         try:
             target.add_item(child)
-        except Exception:
+        except ValueError:
             continue
+
+    flush_buttons()
 
     for name in ("interaction_check", "on_timeout", "on_error"):
         if hasattr(source, name):
