@@ -1,0 +1,70 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+config.yml
+config.local.yml
+*.token
+*.secret
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+virtualenv/
+
+# Build and packaging output
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Logs and runtime output
+*.log
+logs/
+debug.log
+discord.log
+
+# Databases and runtime state
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+db/*.db
+db/*.db-*
+db/*.sqlite
+db/*.sqlite3
+
+# Generated media and temporary assets
+data/ship/tmp_*.png
+data/pictures/*_output.*
+data/pictures/spotify_card_output.png
+*.tmp
+*.temp
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Tooling caches
+.cache/
+.parcel-cache/
+.next/
+node_modules/
