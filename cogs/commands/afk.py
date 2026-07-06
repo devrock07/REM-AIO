@@ -118,8 +118,9 @@ class afk(commands.Cog):
                         await db.execute("UPDATE afk SET AFK = 'False', reason = 'None' WHERE user_id = ?", (message.author.id,))
                         await db.execute("DELETE FROM afk_guild WHERE user_id = ? AND guild_id = ?", (message.author.id, message.guild.id))
                         await db.commit()
-                        wlbat = discord.Embed(title=f'{message.author.display_name} Welcome Back!',
-                                              description=f'I removed your AFK\nTotal Mentions: **{mentionz}**\nAFK Timing: **{been_afk_for}**', color=0x0c0606)
+                        wlbat = discord.Embed(
+                            description=f"Welcome back, {message.author.mention}. AFK removed | `{been_afk_for or '0 seconds'}` | `{mentionz}` mentions"
+                        )
                         try:
                             await message.reply(view = embed_to_view(wlbat))
                         except discord.Forbidden:
