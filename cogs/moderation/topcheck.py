@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 import asyncio
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class TopCheck(commands.Cog):
     def __init__(self, bot):
@@ -48,7 +49,7 @@ class TopCheck(commands.Cog):
         embed = discord.Embed(title="Top Check System",
                               description=(
         "This system ensures that the bot’s role is positioned higher than the user’s top role before executing specific commands.\n\n"
-        "When topcheck is enabled, only users with roles above the bot's (Olympus) role can perform certain moderation actions. "
+        "When topcheck is enabled, only users with roles above the bot's (REM ALL IN ONE BOT) role can perform certain moderation actions. "
         "If topcheck is disabled, any user with the required permissions for a command can execute it.\n\n"
         "**Moderation actions affected by topcheck:**\n"
         "- BAN\n"
@@ -62,7 +63,7 @@ class TopCheck(commands.Cog):
     ),
                               color=0x000000)
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
     @topcheck.command(
         name="enable",
@@ -91,6 +92,6 @@ class TopCheck(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

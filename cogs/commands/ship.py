@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 from PIL import Image, ImageFont, ImageDraw
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Ship(commands.Cog):
     def __init__(self, bot):
@@ -58,7 +59,7 @@ class Ship(commands.Cog):
             b = discord.Embed(color=discord.Color(0xeb1818), description=msg.format(author, user, rate, progress_bar))
             f = discord.File("./data/ship/tmp_ship.png")
             b.set_image(url="attachment://tmp_ship.png")
-            await ctx.send(file=f, embed=b)
+            await ctx.send(file=f, view = embed_to_view(b))
         except errors.BadArgument:
             await ctx.send("Oops, something went wrong! Try again later!")
 
@@ -90,7 +91,7 @@ class Ship(commands.Cog):
         progress_bar = self.create_progress_bar(rate)
         try:
             b = discord.Embed(color=discord.Color(0xeb1818), description=msg.format(author, user, rate, progress_bar))
-            await ctx.send(embed=b)
+            await ctx.send(view = embed_to_view(b))
         except errors.BadArgument:
             await ctx.send("Oops, something went wrong! Try again later!")
 
@@ -122,6 +123,6 @@ def setup(bot):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out support or DM me.
 """

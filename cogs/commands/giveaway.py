@@ -11,6 +11,7 @@ from discord.utils import get
 from utils.Tools import *
 import os
 import aiohttp
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 db_folder = 'db'
 db_file = 'giveaways.db'
@@ -126,7 +127,7 @@ class Giveaway(commands.Cog):
 
                     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1267699529130709075.png")
                     embed.set_footer(text=f"Ended at")
-                    await message.edit(content=f"{emojis.GIVEAWAY} **GIVEAWAY ENDED** {emojis.GIVEAWAY}", embed=embed)
+                    await message.edit(content=f"{emojis.GIVEAWAY} **GIVEAWAY ENDED** {emojis.GIVEAWAY}", view = embed_to_view(embed))
                     await message.reply(f"{emojis.GIVEAWAYS} Congrats {winner}, you won **{giveaway[5]}!**, Hosted by <@{int(giveaway[3])}>")
                     await self.cursor.execute("DELETE FROM Giveaway WHERE message_id = ? AND guild_id = ?", (message.id, message.guild.id))
                     await self.connection.commit()
@@ -167,7 +168,7 @@ class Giveaway(commands.Cog):
             embed = discord.Embed(title="⚠️ Access Denied",
                                   description=f"Cannot exceed more than 15 winners.",
                                   color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -176,7 +177,7 @@ class Giveaway(commands.Cog):
         if len(g_list) >= 5:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description=f"You can only host upto 5 giveaways in this Guild.", color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -185,7 +186,7 @@ class Giveaway(commands.Cog):
         if converted / 60 >= 50400:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description=f"Time cannot exceed 31 days!", color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -193,7 +194,7 @@ class Giveaway(commands.Cog):
         if converted == -1:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                   description=f"Invalid time format", color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -201,7 +202,7 @@ class Giveaway(commands.Cog):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                   description=f"Invalid time format. Please provide the time in numbers.",
                                   color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -218,7 +219,7 @@ class Giveaway(commands.Cog):
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1267699441394126940.png")
         embed.set_footer(text=f"Ends at", icon_url=ctx.bot.user.avatar.url)
 
-        message = await ctx.send(f"{emojis.GIVEAWAY} **GIVEAWAY** {emojis.GIVEAWAY}", embed=embed)
+        message = await ctx.send(f"{emojis.GIVEAWAY} **GIVEAWAY** {emojis.GIVEAWAY}", view = embed_to_view(embed))
         try:
            await ctx.message.delete()
         except:
@@ -259,7 +260,7 @@ class Giveaway(commands.Cog):
             except ValueError:
                 embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                       description="Invalid message ID provided.", color=0x000000)
-                message = await ctx.send(embed=embed)
+                message = await ctx.send(view = embed_to_view(embed))
                 await asyncio.sleep(5)
                 await message.delete()
                 return
@@ -272,7 +273,7 @@ class Giveaway(commands.Cog):
             if re is None:
                 embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                       description=f" The giveaway was not found.", color=0x000000)
-                message = await ctx.send(embed=embed)
+                message = await ctx.send(view = embed_to_view(embed))
                 await asyncio.sleep(5)
                 await message.delete()
                 return
@@ -300,7 +301,7 @@ class Giveaway(commands.Cog):
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1267699529130709075.png")
             embed.set_footer(text=f"Ended")
 
-            await message.edit(content="🎁 **GIVEAWAY ENDED** 🎁", embed=embed)
+            await message.edit(content="🎁 **GIVEAWAY ENDED** 🎁", view = embed_to_view(embed))
 
             if int(ctx.channel.id) != int(re[6]):
                 await ctx.send(f"{emojis.TICK} Successfully ended the giveaway in <#{int(re[6])}>")
@@ -340,7 +341,7 @@ class Giveaway(commands.Cog):
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1267699529130709075.png")
             embed.set_footer(text=f"Ended at")
 
-            await message.edit(content="🎁 **GIVEAWAY ENDED** 🎁", embed=embed)
+            await message.edit(content="🎁 **GIVEAWAY ENDED** 🎁", view = embed_to_view(embed))
 
             await message.reply(f"💐 Congrats {winner}, you won **{re[5]}!**, Hosted by <@{int(re[3])}>")
             await self.cursor.execute("DELETE FROM Giveaway WHERE message_id = ? AND guild_id = ?", (message.id, message.guild.id))
@@ -370,7 +371,7 @@ class Giveaway(commands.Cog):
         if ctx.message.reference.resolved.author.id != self.bot.user.id :
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description=f"The giveaway was not found.", color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -382,7 +383,7 @@ class Giveaway(commands.Cog):
         if re is not None:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description=f"The giveaway is currently running. Please use the `gend` command instead to end the giveaway.", color=0x000000)
-            message = await ctx.send(embed=embed)
+            message = await ctx.send(view = embed_to_view(embed))
             await asyncio.sleep(5)
             await message.delete()
             return
@@ -425,7 +426,7 @@ class Giveaway(commands.Cog):
 
         if not giveaways:
             embed = discord.Embed(description=" No ongoing giveaways.", color=0x000000)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         embed = discord.Embed(title="Ongoing Giveaways", color=0x000000)
@@ -438,4 +439,4 @@ class Giveaway(commands.Cog):
                 inline=False
             )
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))

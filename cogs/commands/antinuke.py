@@ -5,6 +5,7 @@ from discord.ext import commands
 import aiosqlite
 import asyncio
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 class Antinuke(commands.Cog):
@@ -61,7 +62,7 @@ class Antinuke(commands.Cog):
                 color=0x000000,
                 description="Only Server Owner or Extra Owner can Run this Command!"
             )
-      return await ctx.send(embed=embed)
+      return await ctx.send(view = embed_to_view(embed))
 
     is_activated = row[0] if row else False
 
@@ -76,7 +77,7 @@ class Antinuke(commands.Cog):
       
 
       embed.set_thumbnail(url=self.bot.user.avatar.url)
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
 
     elif option.lower() == 'enable':
       if is_activated:
@@ -85,7 +86,7 @@ class Antinuke(commands.Cog):
           color=0x000000
         )
         embed.set_thumbnail(url=self.bot.user.avatar.url)
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
       else:
         
         setup_embed = discord.Embed(
@@ -93,21 +94,21 @@ class Antinuke(commands.Cog):
           description=f"{emojis.TICK} | Initializing Quick Setup!",
           color=0x000000
         )
-        setup_message = await ctx.send(embed=setup_embed)
+        setup_message = await ctx.send(view = embed_to_view(setup_embed))
 
         
         if not ctx.guild.me.guild_permissions.administrator:
           setup_embed.description += f"\n{emojis.ICONS_WARNING} | Setup failed: Missing **Administrator** permission."
-          await setup_message.edit(embed=setup_embed)
+          await setup_message.edit(view = embed_to_view(setup_embed))
           return
 
         await asyncio.sleep(1)
         setup_embed.description += f"\n{emojis.TICK}| Checking Axon's role position for optimal configuration..."
-        await setup_message.edit(embed=setup_embed)
+        await setup_message.edit(view = embed_to_view(setup_embed))
 
         await asyncio.sleep(1)
         setup_embed.description += f"\n{emojis.TICK} | Crafting and configuring the Axon Supreme role..."
-        await setup_message.edit(embed=setup_embed)
+        await setup_message.edit(view = embed_to_view(setup_embed))
         
         try:
           role = await ctx.guild.create_role(
@@ -121,34 +122,34 @@ class Antinuke(commands.Cog):
           await ctx.guild.me.add_roles(role)
         except discord.Forbidden:
           setup_embed.description += f"\n{emojis.ICONS_WARNING} | Setup failed: Insufficient permissions to create role."
-          await setup_message.edit(embed=setup_embed)
+          await setup_message.edit(view = embed_to_view(setup_embed))
           return
         except discord.HTTPException as e:
           setup_embed.description += f"\n{emojis.ICONS_WARNING} | Setup failed: HTTPException: {e}\nCheck Guild **Audit Logs**."
-          await setup_message.edit(embed=setup_embed)
+          await setup_message.edit(view = embed_to_view(setup_embed))
           return
 
         await asyncio.sleep(1)
         setup_embed.description += f"\n{emojis.TICK}| Ensuring precise placement of the Axon Supreme role..."
-        await setup_message.edit(embed=setup_embed)
+        await setup_message.edit(view = embed_to_view(setup_embed))
         try:
           await ctx.guild.edit_role_positions(positions={role: 1})
         except discord.Forbidden:
           setup_embed.description += f"\n{emojis.ICONS_WARNING} | Setup failed: Insufficient permissions to move role."
-          await setup_message.edit(embed=setup_embed)
+          await setup_message.edit(view = embed_to_view(setup_embed))
           return
         except discord.HTTPException as e:
           setup_embed.description += f"\n{emojis.ICONS_WARNING} | Setup failed: HTTPException: {e}."
-          await setup_message.edit(embed=setup_embed)
+          await setup_message.edit(view = embed_to_view(setup_embed))
           return
 
         await asyncio.sleep(1)
         setup_embed.description += f"\n{emojis.TICK} | Safeguarding your changes..."
-        await setup_message.edit(embed=setup_embed)
+        await setup_message.edit(view = embed_to_view(setup_embed))
 
         await asyncio.sleep(1)
         setup_embed.description += f"\n{emojis.TICK} | Activating the Antinuke Modules for enhanced security...!!"
-        await setup_message.edit(embed=setup_embed)
+        await setup_message.edit(view = embed_to_view(setup_embed))
 
         await self.db.execute('INSERT OR REPLACE INTO antinuke (guild_id, status) VALUES (?, ?)', (guild_id, True))
         await self.db.commit()
@@ -163,15 +164,15 @@ class Antinuke(commands.Cog):
 
         embed.add_field(name='', value=f"{emojis.ENABLED_160063} **Anti Prune**\n **Auto Recovery**")
 
-        embed.set_author(name="Quantum Antinuke", icon_url=self.bot.user.avatar.url)
+        embed.set_author(name="REM ALL IN ONE BOT Antinuke", icon_url=self.bot.user.avatar.url)
 
-        embed.set_footer(text="Successfully Enabled Antinuke for this server | Powered by Quantum X Development™", icon_url=self.bot.user.avatar.url)
+        embed.set_footer(text="Successfully Enabled Antinuke for this server | Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.avatar.url)
         embed.set_thumbnail(url=self.bot.user.avatar.url)
 
         view = discord.ui.View()
         view.add_item(discord.ui.Button(label="Show Punishment Type", custom_id="show_punishment"))
 
-        await ctx.send(embed=embed, view=view)
+        await ctx.send(view = embed_to_view(embed, view = view))
 
     elif option.lower() == 'disable':
       if not is_activated:
@@ -188,13 +189,13 @@ class Antinuke(commands.Cog):
           color=0x000000
         )
         embed.set_thumbnail(url=self.bot.user.avatar.url)
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
     else:
       embed = discord.Embed(
         description='Invalid option. Please use `enable` or `disable`.',
         color=0x000000
       )
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
 
 
   @commands.Cog.listener()
@@ -221,11 +222,11 @@ class Antinuke(commands.Cog):
         color=0x000000
       )
       embed.set_footer(text="These punishment types are fixed and assigned as required to ensure guild security/protection", icon_url=self.bot.user.avatar.url)
-      await interaction.response.send_message(embed=embed, ephemeral=True)
+      await interaction.response.send_message(view = embed_to_view(embed), ephemeral=True)
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

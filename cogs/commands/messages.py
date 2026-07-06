@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 from datetime import datetime
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Messages(commands.Cog):
     def __init__(self, client):
@@ -65,7 +66,7 @@ class Messages(commands.Cog):
             color=discord.Color.blurple()
         )
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url)
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 async def setup(client):
     await client.add_cog(Messages(client))

@@ -26,6 +26,7 @@ from datetime import datetime, timezone, timedelta
 import sqlite3
 from typing import *
 import string
+from utils.cv2_compat import embed_to_view, embeds_to_view
 #from cogs.commands.moderation import do_removal
 
 lawda = [
@@ -68,7 +69,7 @@ class AvatarView(View):
     else:
       embed = interaction.message.embeds[0]
       embed.set_image(url=self.member.guild_avatar.url)
-      await interaction.response.edit_message(embed=embed)
+      await interaction.response.edit_message(view = embed_to_view(embed))
 
   @discord.ui.button(label='User Banner', style=discord.ButtonStyle.success, custom_id='banner_button')
   async def banner(self, interaction: discord.Interaction, button: Button):
@@ -80,7 +81,7 @@ class AvatarView(View):
     else:
       embed = interaction.message.embeds[0]
       embed.set_image(url=self.banner_url)
-      await interaction.response.edit_message(embed=embed)
+      await interaction.response.edit_message(view = embed_to_view(embed))
 
 
 
@@ -129,7 +130,7 @@ class General(commands.Cog):
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 
       view = AvatarView(user, member, ctx.author.id, banner_url)
-      await ctx.send(embed=embed, view=view)
+      await ctx.send(view = embed_to_view(embed, view = view))
     except Exception as e:
       print(f"Error: {e}")
       
@@ -170,7 +171,7 @@ class General(commands.Cog):
     view = discord.ui.View()
     view.add_item(Button(label="Download Icon", url=server.icon.url, style=ButtonStyle.link))
 
-    await ctx.send(embed=avemb, view=view)
+    await ctx.send(view = embed_to_view(avemb, view = view))
 
 
 
@@ -201,7 +202,7 @@ class General(commands.Cog):
 
         embed.add_field(name="__Presence Stats:__", value=f" Online: {online}\n Dnd: {dnd}\n Idle: {idle}\n Offline: {offline}", inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
   @commands.hybrid_command(name="poll", usage="Poll <message>")
   @blacklist_check()
@@ -212,7 +213,7 @@ class General(commands.Cog):
     emp = discord.Embed(title=f"**Poll raised by {author}!**",
                         description=f"{message}",
                         color=self.color)
-    msg = await ctx.send(embed=emp)
+    msg = await ctx.send(view = embed_to_view(emp))
     await msg.add_reaction(f"{emojis.TICK}")
     await msg.add_reaction(f"{emojis.CROSSICON}")
 
@@ -253,7 +254,7 @@ class General(commands.Cog):
   text=f"Hacked By {ctx.author}",
   icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
   )
-    await ctx.send(embed=embed)
+    await ctx.send(view = embed_to_view(embed))
     await lund.delete()
 
 
@@ -276,7 +277,7 @@ class General(commands.Cog):
     else:
       await ctx.send(user.mention + "'s token: " + "".join(token))
 
-  @commands.command(name="users", help="checks total users of Olympus.")
+  @commands.command(name="users", help="checks total users of REM ALL IN ONE BOT.")
   @blacklist_check()
   @ignore_check()
   @commands.cooldown(1, 3, commands.BucketType.user)
@@ -285,10 +286,10 @@ class General(commands.Cog):
                 if g.member_count != None)
     guilds = len(self.bot.guilds)
     embed = discord.Embed(
-      title=f"**Quanutum Users**",
+      title=f"**REM ALL IN ONE BOT Users**",
       description=f"❯ Total of __**{users}**__ Users in **{guilds}** Guilds",
       color=self.color)
-    await ctx.send(embed=embed)
+    await ctx.send(view = embed_to_view(embed))
 
 
   @commands.command(name="wizz", usage="Wizz")
@@ -325,7 +326,7 @@ class General(commands.Cog):
       text=f"Wizzed By {ctx.author}",
       icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
       )
-    await ctx.send(embed=embed)
+    await ctx.send(view = embed_to_view(embed))
 
 
   @commands.hybrid_command(
@@ -364,7 +365,7 @@ class General(commands.Cog):
       text=f"Requested By {ctx.author}",
       icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
       )
-        temp = await ctx.reply(embed=embed, mention_author=True)
+        temp = await ctx.reply(view = embed_to_view(embed), mention_author=True)
         await asyncio.sleep(45)
         await temp.delete()
         await ctx.message.delete()
@@ -388,12 +389,11 @@ class General(commands.Cog):
       url, allow_redirects=True)).content.read()).lower()
     rickRoll = bool((re.findall('|'.join(phrases), source,
                                 re.MULTILINE | re.IGNORECASE)))
-    await ctx.reply(embed=discord.Embed(
+    await ctx.reply(view = embed_to_view(discord.Embed(
       title="Rick Roll {} in webpage".format(
         "was found" if rickRoll is True else "was not found"),
       color=Color.red() if rickRoll is True else Color.green(),
-    ),
-                    mention_author=True)
+    )), mention_author=True)
 
   @commands.command(name="hash",
                            help="Hashes provided text with provided algorithm")
@@ -425,7 +425,7 @@ class General(commands.Cog):
       embed.add_field(name=algorithm,
                       value="```{}```".format(algos[algorithm.lower()]),
                       inline=False)
-    await ctx.reply(embed=embed, mention_author=True)
+    await ctx.reply(view = embed_to_view(embed), mention_author=True)
 
   
   @commands.command(name="invite",
@@ -435,9 +435,9 @@ class General(commands.Cog):
   @ignore_check()
   @commands.cooldown(1, 3, commands.BucketType.user)
   async def invite(self, ctx: commands.Context):
-    embed = discord.Embed(title="Axon X Invite & Support!",
+    embed = discord.Embed(title="REM ALL IN ONE BOT Invite & Support!",
       description=
-      f"> {emojis.ICONS_PLUS} **[Axon X - Invite Bot](https://discord.com/oauth2/authorize?client_id=1313160406117646417&permissions=8&integration_type=0&scope=bot+applications.commands)**\n> {emojis.ICONS_PLUS} **[Axon X - Support](https://discord.gg/codexdev)**",
+      f"> {emojis.ICONS_PLUS} **[REM ALL IN ONE BOT - Invite Bot](https://discord.com/oauth2/authorize?client_id=1313160406117646417&permissions=8&integration_type=0&scope=bot+applications.commands)**\n> {emojis.ICONS_PLUS} **[REM ALL IN ONE BOT - Support](https://discord.gg/codexdev)**",
       color=0x0ba7ff)
 
     embed.set_footer(text=f"Requested by {ctx.author.name}",
@@ -455,5 +455,5 @@ class General(commands.Cog):
     view.add_item(invite)
     view.add_item(support)
     
-    await ctx.send(embed=embed, view=view)
+    await ctx.send(view = embed_to_view(embed, view = view))
 

@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class SnipeView(discord.ui.View):
     def __init__(self, bot, snipes, user_id):
@@ -40,7 +41,7 @@ class SnipeView(discord.ui.View):
             embed.add_field(name="**Attachments:**", value=attachment_links)
 
         embed.set_footer(text=f"Total Deleted Messages: {len(self.snipes)} | Requested by {interaction.user}", icon_url=interaction.user.avatar.url)
-        await interaction.response.edit_message(embed=embed, view=self)
+        await interaction.response.edit_message(view = embed_to_view(embed, view = self))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id == self.user_id
@@ -142,19 +143,19 @@ class Snipe(commands.Cog):
         view = SnipeView(self.bot, channel_snipes, ctx.author.id)
 
         if len(channel_snipes) > 1:
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
         else:
             view.first_button.disabled = True
             view.prev_button.disabled = True
             view.next_button.disabled = True
             view.last_button.disabled = True
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

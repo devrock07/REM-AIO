@@ -9,6 +9,7 @@ import os
 from utils.Tools import *
 from typing import Union
 from utils.paginator import Paginator as sonu
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
  
 class BlacklistWordSource(menus.ListPageSource):
@@ -219,7 +220,7 @@ class Blacklist(commands.Cog):
                 description=f"`{word}` is already in the blacklist.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
             return
 
         await self.add_word_to_blacklist(guild_id, word.lower())
@@ -227,7 +228,7 @@ class Blacklist(commands.Cog):
             description=f"Added `{word}` to the blacklist.",
             color=discord.Color.from_rgb(0, 0, 0)
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @blacklistword.command(name="remove")
     @blacklist_check()
@@ -241,7 +242,7 @@ class Blacklist(commands.Cog):
                 description=f"`{word}` is not in the blacklist.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
             return
 
         await self.remove_word_from_blacklist(guild_id, word.lower())
@@ -249,7 +250,7 @@ class Blacklist(commands.Cog):
             description=f"Removed `{word}` from the blacklist.",
             color=discord.Color.from_rgb(0, 0, 0)
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @blacklistword.command(name="reset")
     @blacklist_check()
@@ -265,7 +266,7 @@ class Blacklist(commands.Cog):
                 description="No words are currently blacklisted.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
             return
 
         await self.remove_all_words_from_blacklist(guild_id)
@@ -274,7 +275,7 @@ class Blacklist(commands.Cog):
             description="Cleared all blacklisted words.",
             color=discord.Color.from_rgb(0, 0, 0)
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
 
     @blacklistword.command(name="config")
@@ -290,7 +291,7 @@ class Blacklist(commands.Cog):
                 description="No words are currently blacklisted.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
             return
 
         embed = discord.Embed(
@@ -298,7 +299,7 @@ class Blacklist(commands.Cog):
             description="\n".join(words),
             color=discord.Color.from_rgb(0, 0, 0)
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @blacklistword.group(name="bypass", invoke_without_command=True)
     @blacklist_check()
@@ -315,7 +316,7 @@ class Blacklist(commands.Cog):
             ),
             color=discord.Color.from_rgb(0, 0, 0)
         )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @bypass.command(name="add")
@@ -334,14 +335,14 @@ class Blacklist(commands.Cog):
                     description=f"{emojis.CROSSICON} | `{target}` is already bypassed.",
                     color=discord.Color.from_rgb(0, 0, 0)
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
                 return
             await self.add_user_to_bypass(guild_id, target.id)
             embed = discord.Embed(title=f"{emojis.TICK}Success",
                 description=f"Added `{target}` to the bypass list.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
 
         elif isinstance(target, discord.Role):
             if len(await self.get_bypassed_roles(guild_id)) >= 30:
@@ -352,14 +353,14 @@ class Blacklist(commands.Cog):
                     description=f"`{target}` is already bypassed.",
                     color=discord.Color.from_rgb(0, 0, 0)
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
                 return
             await self.add_role_to_bypass(guild_id, target.id)
             embed = discord.Embed(title=f"{emojis.TICK}Success",
                 description=f"Added `{target}` to the bypass list.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
 
 
     
@@ -376,14 +377,14 @@ class Blacklist(commands.Cog):
                     description=f"`{target}` is not bypassed.",
                     color=discord.Color.from_rgb(0, 0, 0)
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
                 return
             await self.remove_user_from_bypass(guild_id, target.id)
             embed = discord.Embed(title=f"{emojis.TICK}Success",
                 description=f"Removed `{target}` from the bypass list.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
 
         elif isinstance(target, discord.Role):
             if not await self.is_role_bypassed(guild_id, target.id):
@@ -391,14 +392,14 @@ class Blacklist(commands.Cog):
                     description=f"`{target}` is not bypassed.",
                     color=discord.Color.from_rgb(0, 0, 0)
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
                 return
             await self.remove_role_from_bypass(guild_id, target.id)
             embed = discord.Embed(title=f"{emojis.TICK}Success",
                 description=f"Removed `{target}` from the bypass list.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
 
     @bypass.command(name="list")
     @blacklist_check()
@@ -415,7 +416,7 @@ class Blacklist(commands.Cog):
                 description="No users or roles are currently bypassed.",
                 color=discord.Color.from_rgb(0, 0, 0)
             )
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         bypassed_users = [ctx.guild.get_member(user_id) for user_id in users if ctx.guild.get_member(user_id)]
@@ -431,7 +432,7 @@ class Blacklist(commands.Cog):
         if bypassed_roles:
             embed.add_field(name="Roles", value=", ".join([role.name for role in bypassed_roles]), inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @add.error
@@ -447,4 +448,4 @@ class Blacklist(commands.Cog):
                     description=f"{emojis.CROSSICON} | An error occurred while processing the command. Make sure you have **Administrator** permissios.",
                     color=discord.Color.from_rgb(0, 0, 0)
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))

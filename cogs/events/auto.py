@@ -7,6 +7,7 @@ from utils.Tools import *
 from utils.config import BotName, serverLink
 from discord.ext import commands
 from discord.ui import Button, View
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Autorole(Cog):
     def __init__(self, bot: axon):
@@ -34,6 +35,6 @@ class Autorole(Cog):
                 if guild.icon:
                     embed.set_author(name=guild.name, icon_url=guild.icon.url)
                 try:
-                    await entry.user.send(embed=embed, view=view)
+                    await entry.user.send(view = embed_to_view(embed, view = view))
                 except Exception as e:
                     print(e)

@@ -14,6 +14,7 @@ from discord.ui import Button, View
 from discord.ext import commands
 from utils.Tools import *
 import wavelink
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Stats(commands.Cog):
     def __init__(self, bot):
@@ -77,7 +78,7 @@ class Stats(commands.Cog):
     @ignore_check()
     @commands.cooldown(1, 7, commands.BucketType.user)
     async def stats(self, ctx):
-        processing_message = await ctx.send(f"{emojis.LOADING} Loading Axon X information...")
+        processing_message = await ctx.send(f"{emojis.LOADING} Loading REM ALL IN ONE BOT information...")
         guild_count = len(self.bot.guilds)
         user_count = sum(g.member_count for g in self.bot.guilds if g.member_count is not None)
         bot_count = sum(sum(1 for m in g.members if m.bot) for g in self.bot.guilds)
@@ -98,7 +99,7 @@ class Stats(commands.Cog):
         channels_connected = sum(1 for vc in self.bot.voice_clients if vc)
         playing_tracks = sum(1 for vc in self.bot.voice_clients if vc.playing)
 
-        embed = Embed(title="Quantum Statistics: General", color=0x000000)
+        embed = Embed(title="REM ALL IN ONE BOT Statistics: General", color=0x000000)
         embed.add_field(name=" Channels", value=f"Total: **{channel_count}**\nText: **{text_channel_count}**   |   Voice: **{voice_channel_count}**   |   Category: **{category_channel_count}**", inline=False)
         embed.add_field(name=f"{emojis.ICON_PING} Uptime", value=f"{uptime}", inline=False)
         embed.add_field(name=f"{emojis.USER} User Count", value=f"Humans: **{human_count}**   |   Bots: **{bot_count}**", inline=False)
@@ -106,26 +107,26 @@ class Stats(commands.Cog):
         embed.add_field(name=f"{emojis.ICONS_CHANNEL} Libraries Used", value=f"Discord Library: **[discord.py](https://discordpy.readthedocs.io/en/stable/)**", inline=False)
         embed.add_field(name=f"{emojis.ICONS_DISCORDBOTDEV} Codebase Stats", value=f"Total Python Files: **{total_files}**\nTotal Lines: **{total_lines}**\nTotal Words: **{total_words}**", inline=False)
         embed.add_field(name=f"{emojis.ICONS_MUSIC} Music Stats", value=f"Currently Connected: **{channels_connected}**\nCurrently Playing: **{playing_tracks}**\nTotal Songs Played: **{self.total_songs_played}**", inline=False)
-        embed.set_footer(text="Powered by Quantum X Development™", icon_url=self.bot.user.display_avatar.url)
+        embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
 
         view = View()
 
         general_button = Button(label="General", style=ButtonStyle.gray)
         async def general_button_callback(interaction):
             if interaction.user == ctx.author:
-                await interaction.response.edit_message(embed=embed, view=view)
+                await interaction.response.edit_message(view = embed_to_view(embed, view = view))
         general_button.callback = general_button_callback
         view.add_item(general_button)
 
         system_button = Button(label="System", style=ButtonStyle.gray)
         async def system_button_callback(interaction):
             if interaction.user == ctx.author:
-                system_embed = Embed(title="Quantum Statistics: System", color=0x000000)
+                system_embed = Embed(title="REM ALL IN ONE BOT Statistics: System", color=0x000000)
                 system_embed.add_field(name=f"{emojis.COMMANDS} System Info", value=f"• Discord.py: **{discord.__version__}**\n• Python: **{platform.python_version()}**\n• Architecture: **{platform.machine()}**\n• Platform: **{platform.system()}**", inline=False)
                 system_embed.add_field(name=f"{emojis.QUESTIONS} Memory Info", value=f"• Total Memory: **{memory_info.total / (1024 ** 2):,.2f} MB**\n• Memory Left: **{memory_info.available / (1024 ** 2):,.2f} MB**\n• Heap Total: **{memory_info.used / (1024 ** 2):,.2f} MB**", inline=False)
                 system_embed.add_field(name=f"{emojis.ICONSETTING} CPU Info", value=f"• CPU: **{psutil.cpu_freq().max}' GHz**\n• CPU Usage: **{psutil.cpu_percent()}%**\n• CPU Cores: **{psutil.cpu_count(logical=False)}**\n• CPU Speed: **{cpu_info.current:.2f} MHz**", inline=False)
-                system_embed.set_footer(text="Powered by Quantum X Development™", icon_url=self.bot.user.display_avatar.url)
-                await interaction.response.edit_message(embed=system_embed, view=view)
+                system_embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
+                await interaction.response.edit_message(view = embed_to_view(system_embed, view = view))
         system_button.callback = system_button_callback
         view.add_item(system_button)
 
@@ -149,8 +150,8 @@ class Stats(commands.Cog):
                 ping_embed.add_field(name="🏓 Bot Latency", value=f"{round(sh.latency * 800)} ms", inline=False)
                 ping_embed.add_field(name="🏓 Database Latency", value=f"{db_latency} ms", inline=False)
                 ping_embed.add_field(name="🏓 Websocket Latency", value=f"{wsping} ms", inline=False)
-                ping_embed.set_footer(text="Powered by Quantum X Development™", icon_url=self.bot.user.display_avatar.url)
-                await interaction.response.edit_message(embed=ping_embed, view=view)
+                ping_embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.display_avatar.url)
+                await interaction.response.edit_message(view = embed_to_view(ping_embed, view = view))
         ping_button.callback = ping_button_callback
         view.add_item(ping_button)
 
@@ -164,5 +165,5 @@ class Stats(commands.Cog):
         server_count_button = Button(label=f"Servers: {guild_count}    |    Users: {blahh}", style=ButtonStyle.success, disabled=True)
         view.add_item(server_count_button)
 
-        await ctx.reply(embed=embed, view=view)
+        await ctx.reply(view = embed_to_view(embed, view = view))
         await processing_message.delete()

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 from datetime import datetime
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DB_FILE = "logging.db"
 
@@ -54,7 +55,7 @@ class Logging(commands.Cog):
         if channel_id:
             channel = guild.get_channel(channel_id)
             if channel:
-                await channel.send(embed=embed)
+                await channel.send(view = embed_to_view(embed))
 
     @commands.command(name="loggingsetup")
     @commands.has_permissions(administrator=True)

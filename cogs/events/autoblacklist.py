@@ -5,6 +5,7 @@ from core import axon, Cog
 from discord.ext import commands
 import aiosqlite
 from datetime import datetime, timedelta
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class AutoBlacklist(Cog):
     def __init__(self, client: axon):
@@ -35,7 +36,7 @@ class AutoBlacklist(Cog):
                             ),
                             color=0x000000
                         )
-                        await channel.send(embed=embed)
+                        await channel.send(view = embed_to_view(embed))
                 elif user_id:
                     await db.execute('''
                         INSERT OR IGNORE INTO user_blacklist (user_id, timestamp) VALUES (?, ?)
@@ -93,7 +94,7 @@ class AutoBlacklist(Cog):
                     ),
                     color=0x000000
                 )
-                await message.channel.send(embed=embed)
+                await message.channel.send(view = embed_to_view(embed))
                 return
 
         
@@ -113,7 +114,7 @@ class AutoBlacklist(Cog):
                         description=f"**{message.author.mention} has been blacklisted for repeatedly mentioning me. If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev) with any proof if possible.**",
                         color=0x000000
                     )
-                    await message.channel.send(embed=embed)
+                    await message.channel.send(view = embed_to_view(embed))
                     return
 
                 if message.guild:
@@ -145,4 +146,4 @@ class AutoBlacklist(Cog):
                     description=f"**{ctx.author.mention} has been blacklisted for spamming commands. If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev) with any proof if possible.**",
                     color=0x000000
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))

@@ -21,6 +21,7 @@ from typing import Optional
 import aiosqlite 
 import asyncio
 import aiohttp
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 start_time = time.time()
@@ -51,7 +52,7 @@ class RoleInfoView(View):
     permissions = [perm.replace("_", " ").title() for perm, value in self.role.permissions if value]
     permission_text = ", ".join(permissions) if permissions else "None"
     embed = discord.Embed(title=f"Permissions for {self.role.name}", description=permission_text or "No permissions.", color=self.role.color)
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.response.send_message(view = embed_to_view(embed), ephemeral=True)
 
     
 class OverwritesView(View):
@@ -99,7 +100,7 @@ class OverwritesView(View):
       embed = discord.Embed(title=f"Overwrites for {self.channel.name}", color=discord.Color.blurple())
       embed.description = "\n".join(overwrites) if overwrites else "No overwrites for this channel."
       embed.set_footer(text=f"{emojis.TICK} = Allowed, {emojis.CROSSICON} = Denied, ⛔ = None")
-      await interaction.response.send_message(embed=embed, ephemeral=True)
+      await interaction.response.send_message(view = embed_to_view(embed), ephemeral=True)
 
 
 
@@ -144,7 +145,7 @@ class Extra(commands.Cog):
       embed.set_footer(text=f"Requested By {ctx.author}",
                        icon_url=ctx.author.avatar.url
                        if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.reply(embed=embed)
+      await ctx.reply(view = embed_to_view(embed))
 
   
   @banner.command(name="user")
@@ -180,7 +181,7 @@ class Extra(commands.Cog):
                        icon_url=ctx.author.avatar.url
                        if ctx.author.avatar else ctx.author.default_avatar.url)
 
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
 
 
   
@@ -204,7 +205,7 @@ class Extra(commands.Cog):
       embed.add_field(name="__Online Duration__", value=f"{emojis.UPTIME} {uptime_duration_string}", inline=False)
       embed.set_footer(text=f"Requested by {ctx.author}", icon_url=pfp)
 
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
 
     
 
@@ -296,7 +297,7 @@ class Extra(commands.Cog):
             embed.set_image(url=ctx.guild.banner)
 
 
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
         
 
   
@@ -445,7 +446,7 @@ class Extra(commands.Cog):
         embed.set_footer(text=f"{member.name} not in this server.",
                          icon_url=ctx.author.avatar.url if ctx.author.avatar
                          else ctx.author.default_avatar.url)
-    await ctx.send(embed=embed)
+    await ctx.send(view = embed_to_view(embed))
 
 
 
@@ -474,7 +475,7 @@ class Extra(commands.Cog):
                     icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
 
     view = RoleInfoView(role, ctx.author.id)
-    await ctx.send(embed=embed, view=view)
+    await ctx.send(view = embed_to_view(embed, view = view))
 
 
 
@@ -490,10 +491,10 @@ class Extra(commands.Cog):
   @commands.cooldown(1, 3, commands.BucketType.user)
   async def boosts(self, ctx):
     await ctx.send(
-      embed=discord.Embed(title=f"{emojis.ICON_BOOSTER} Boosts Count Of {ctx.guild.name}",
+      view = embed_to_view(discord.Embed(title=f"{emojis.ICON_BOOSTER} Boosts Count Of {ctx.guild.name}",
                           description="**Total `%s` boosts**" %
                           (ctx.guild.premium_subscription_count),
-                          color=self.color))
+                          color=self.color)))
 
   @commands.hybrid_group(name="list",
                          invoke_without_command=True,
@@ -834,8 +835,8 @@ class Extra(commands.Cog):
   @commands.cooldown(1, 3, commands.BucketType.user)
   async def joined_at(self, ctx):
     joined = ctx.author.joined_at.strftime("%a, %d %b %Y %I:%M %p")
-    await ctx.send(embed=discord.Embed(
-      title="joined-at", description="**`%s`**" % (joined), color=self.color))
+    await ctx.send(view = embed_to_view(discord.Embed(
+      title="joined-at", description="**`%s`**" % (joined), color=self.color)))
 
   @commands.command(name="github", usage="github [search]")
   @blacklist_check()
@@ -884,7 +885,7 @@ class Extra(commands.Cog):
     view.add_item(Button(label="Join", style=discord.ButtonStyle.green, url=f"https://discord.com/channels/{ctx.guild.id}/{channel.id}"))
     view.add_item(Button(label="Invite", style=discord.ButtonStyle.link, url=f"https://discord.com/channels/{ctx.guild.id}/{channel.id}/invite"))
 
-    await ctx.send(embed=embed, view=view)
+    await ctx.send(view = embed_to_view(embed, view = view))
 
 
   @commands.hybrid_command(name="channelinfo",
@@ -916,7 +917,7 @@ class Extra(commands.Cog):
     view = OverwritesView(channel, ctx.author.id)
     view.add_item(Button(label="Redirect Channel", style=discord.ButtonStyle.green, url=f"https://discord.com/channels/{ctx.guild.id}/{channel.id}"))
       
-    await ctx.send(embed=embed, view=view)
+    await ctx.send(view = embed_to_view(embed, view = view))
 
 
   @commands.command(name="ping", aliases=['latency'],
@@ -1008,7 +1009,7 @@ class Extra(commands.Cog):
                           color=0x000000)
     embed.add_field(name="__**Key Permissions**__", value=permissions_list, inline=False)
 
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   
 
@@ -1034,9 +1035,9 @@ class Extra(commands.Cog):
                     inline=True)
     embed.add_field(name="Server", value=ctx.guild.name, inline=False)
     embed.add_field(name="Channel", value=ctx.channel.name, inline=False)
-    await channel.send(embed=embed)
+    await channel.send(view = embed_to_view(embed))
     confirm_embed = discord.Embed(title=f"{emojis.TICK} Bug Reported",
       description="Thank you for reporting the bug. We will look into it.",
       color=0x000000)
-    await ctx.reply(embed=confirm_embed)
+    await ctx.reply(view = embed_to_view(confirm_embed))
 

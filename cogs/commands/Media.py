@@ -6,6 +6,7 @@ from discord.ext import commands
 from utils.Tools import blacklist_check, ignore_check
 from collections import defaultdict
 import time
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Media(commands.Cog):
     def __init__(self, client):
@@ -58,7 +59,7 @@ class Media(commands.Cog):
                         description="A media channel is already set. Please remove it before setting a new one.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
             await db.execute('INSERT INTO media_channels (guild_id, channel_id) VALUES (?, ?)', (ctx.guild.id, channel.id))
@@ -70,7 +71,7 @@ class Media(commands.Cog):
             color=0x000000
         )
         embed.set_footer(text="Make sure to grant me \"Manage Messages\" permission for functioning of media channel.")
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @media.command(name="remove", aliases=["reset", "delete"], help="Removes the current media-only channel")
     @blacklist_check()
@@ -87,7 +88,7 @@ class Media(commands.Cog):
                         description="There is no media-only channel set for this server.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
             await db.execute('DELETE FROM media_channels WHERE guild_id = ?', (ctx.guild.id,))
@@ -98,7 +99,7 @@ class Media(commands.Cog):
             description="Successfully removed the media-only channel.",
             color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @media.command(name="config", aliases=["settings", "show"], help="Shows the configured media-only channel")
     @blacklist_check()
@@ -115,7 +116,7 @@ class Media(commands.Cog):
                         description="There is no media-only channel set for this server.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
         channel = self.client.get_channel(result[0])
@@ -124,7 +125,7 @@ class Media(commands.Cog):
             description=f"The configured media-only channel is {channel.mention}.",
             color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @media.group(name="bypass", help="Add/Remove user to bypass in Media only channel, Bypassed users can send messages in Media channel.", invoke_without_command=True)
     @blacklist_check()
@@ -151,7 +152,7 @@ class Media(commands.Cog):
                         description="The bypass list can only hold up to 25 users.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
             async with db.execute('SELECT 1 FROM media_bypass WHERE guild_id = ? AND user_id = ?', (ctx.guild.id, user.id)) as cursor:
@@ -162,7 +163,7 @@ class Media(commands.Cog):
                         description=f"{user.mention} is already in the bypass list.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
             await db.execute('INSERT INTO media_bypass (guild_id, user_id) VALUES (?, ?)', (ctx.guild.id, user.id))
@@ -173,7 +174,7 @@ class Media(commands.Cog):
             description=f"{user.mention} has been added to the bypass list.",
             color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @bypass.command(name="remove", help="Removes a user from the bypass list")
     @blacklist_check()
@@ -190,7 +191,7 @@ class Media(commands.Cog):
                         description=f"{user.mention} is not in the bypass list.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
             await db.execute('DELETE FROM media_bypass WHERE guild_id = ? AND user_id = ?', (ctx.guild.id, user.id))
@@ -201,7 +202,7 @@ class Media(commands.Cog):
             description=f"{user.mention} has been removed from the bypass list.",
             color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @bypass.command(name="show", aliases=["list", "view"], help="Shows the bypass list")
     @blacklist_check()
@@ -218,7 +219,7 @@ class Media(commands.Cog):
                         description="There are no users in the bypass list.",
                         color=0x000000
                     )
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
 
         users = [self.client.get_user(user_id).mention for user_id, in result]
@@ -229,7 +230,7 @@ class Media(commands.Cog):
             description=user_mentions,
             color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -288,12 +289,12 @@ class Media(commands.Cog):
                         ),
                         color=0x000000
                     )
-                    await message.channel.send(f"{message.author.mention}", embed=embed)
+                    await message.channel.send(f"{message.author.mention}", view = embed_to_view(embed))
                     del self.infractions[message.author.id]
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

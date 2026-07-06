@@ -8,6 +8,7 @@ import aiosqlite
 import asyncio
 from utils.Tools import *
 from typing import List, Tuple
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 DATABASE_PATH = 'db/customrole.db'
 DATABASE_PATH2 = 'db/np.db'
@@ -35,7 +36,7 @@ class Customrole(commands.Cog):
     async def add_role(self, *, role_id: int, member: discord.Member):
         if member.guild.me.guild_permissions.manage_roles:
             role = discord.Object(id=role_id)
-            await member.add_roles(role, reason="Quantum Customrole | Role Added")
+            await member.add_roles(role, reason="REM ALL IN ONE BOT Customrole | Role Added")
         else:
             raise discord.Forbidden("Bot does not have permission to manage roles.")
 
@@ -44,7 +45,7 @@ class Customrole(commands.Cog):
     async def remove_role(self, *, role_id: int, member: discord.Member):
         if member.guild.me.guild_permissions.manage_roles:
             role = discord.Object(id=role_id)
-            await member.remove_roles(role, reason="Quantum Customrole | Role Removed")
+            await member.remove_roles(role, reason="REM ALL IN ONE BOT Customrole | Role Removed")
         else:
             raise discord.Forbidden("Bot does not have permission to manage roles.")
             
@@ -53,12 +54,12 @@ class Customrole(commands.Cog):
     async def add_role2(self, *, role: int, member: discord.Member):
         if member.guild.me.guild_permissions.manage_roles:
             role = discord.Object(id=int(role))
-            await member.add_roles(role, reason="Quantum Customrole | Role Added ")
+            await member.add_roles(role, reason="REM ALL IN ONE BOT Customrole | Role Added ")
 
     async def remove_role2(self, *, role: int, member: discord.Member):
         if member.guild.me.guild_permissions.manage_roles:
             role = discord.Object(id=int(role))
-            await member.remove_roles(role, reason="Quantum Customrole| Role Removed")
+            await member.remove_roles(role, reason="REM ALL IN ONE BOT Customrole| Role Removed")
 
     
 
@@ -84,27 +85,27 @@ class Customrole(commands.Cog):
                                     embed = discord.Embed(title=f"{emojis.TICK} Success",
                                         description=f"**Removed** <@&{role.id}> From {member.mention}",
                                         color=0x000000)
-                                await context.reply(embed=embed)
+                                await context.reply(view = embed_to_view(embed))
                             else:
                                 embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                     description=f"{role_type.capitalize()} role is not set up in {context.guild.name}",
                                     color=0x000000)
-                                await context.reply(embed=embed)
+                                await context.reply(view = embed_to_view(embed))
                         else:
                             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                 description=f"You need {reqrole.mention} to run this command.",
                                 color=0x000000)
-                            await context.reply(embed=embed)
+                            await context.reply(view = embed_to_view(embed))
                     else:
                         embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                             description=f"Required role is not set up in {context.guild.name}",
                             color=0x000000)
-                        await context.reply(embed=embed)
+                        await context.reply(view = embed_to_view(embed))
                 else:
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                         description=f"Roles configuration is not set up in {context.guild.name}",
                         color=0x000000)
-                    await context.reply(embed=embed)
+                    await context.reply(view = embed_to_view(embed))
 
     
 
@@ -183,12 +184,12 @@ class Customrole(commands.Cog):
             embed = discord.Embed(title=f"{emojis.TICK} Success",
                 description=f"Added {role.mention} to `Staff` Role\n\n__**How to Use?**__\nUse `staff <user>` Command to **Add {role.mention}** role to User & use again to the same user to **Remove role**. ",
                 color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     @set.command(name="girl",
                  description="Setup girl role in the Guild",
@@ -204,12 +205,12 @@ class Customrole(commands.Cog):
             embed = discord.Embed(title=f"{emojis.TICK} Success",
                 description=f"Added {role.mention} to `Girl` Role\n\n__**How to Use?**__\nUse `girl <user>` Command to **Add {role.mention}** role to User & use again to the same user to **Remove role**.  ",
                 color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                   description="Your role should be above my top role.",
                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     @set.command(name="vip",
                  description="Setups vip role in the Guild",
@@ -225,12 +226,12 @@ class Customrole(commands.Cog):
             embed = discord.Embed(
                 description=f"Added {role.mention} to `VIP` Role\n\n__**How to Use?**__\nUse `vip <user>` Command to **Add {role.mention}** role to User & use again to the same user to **Remove role**. ",
                 color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING}Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     @set.command(name="guest",
                  description="Setup guest role in the Guild",
@@ -246,12 +247,12 @@ class Customrole(commands.Cog):
             embed = discord.Embed(
                 description=f"Added {role.mention} to `Guest` Role\n\n__**How to Use?**__\nUse `guest <user>` Command to **Add {role.mention}** role to User & use again to the same user to **Remove role**. ",
                 color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     @set.command(name="friend",
                  description="Setup friend role in the Guild",
@@ -267,12 +268,12 @@ class Customrole(commands.Cog):
             embed = discord.Embed(
                 description=f"Added {role.mention} to `Friend` Role\n\n__**How to Use?**__\nUse `friend <user>` Command to **Add {role.mention}** role to User & use again to the same user to **Remove role**. ",
                 color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     @set.command(name="reqrole",
                  description="Setup required role for custom role commands",
@@ -289,12 +290,12 @@ class Customrole(commands.Cog):
                 color=0x000000,
                 description=f"Added {role.mention} for Required role to run custom role commands in {context.guild.name}"
             )
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
     
 
@@ -320,7 +321,7 @@ class Customrole(commands.Cog):
             embed.add_field(name="Required Role for Commands", value=context.guild.get_role(role_data[5]).mention if role_data[5] else "None", inline=False)
             embed.set_footer(text="Use Commands to assign role & use again to the same user to remove role.")
             
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
             
         else:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
@@ -328,7 +329,7 @@ class Customrole(commands.Cog):
                 color=0x000000
             )
             
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
 
 
@@ -352,7 +353,7 @@ class Customrole(commands.Cog):
                         description="You have reached the maximum limit of 56 custom role commands for this guild.",
                         color=0x000000
                     )
-                    await context.reply(embed=embed)
+                    await context.reply(view = embed_to_view(embed))
                     return
 
             async with db.execute("SELECT name FROM custom_roles WHERE guild_id = ?", (context.guild.id,)) as cursor:
@@ -362,7 +363,7 @@ class Customrole(commands.Cog):
                         description=f"A custom role command with the name `{name}` already exists in this guild. Remove it before creating a new one.",
                         color=0x000000
                     )
-                    await context.reply(embed=embed)
+                    await context.reply(view = embed_to_view(embed))
                     return
 
             await db.execute("INSERT INTO custom_roles (guild_id, name, role_id) VALUES (?, ?, ?)",
@@ -373,7 +374,7 @@ class Customrole(commands.Cog):
             description=f"Custom role command `{name}` created to assign the role {role.mention}.\n\n__**How to Use?**__\nUse `{name} <user>` Command to Assign/Remove {role.mention} role to User.\n> This will work for the users having `Manage Roles` permissions.",
             color=0x000000
         )
-        await context.reply(embed=embed)
+        await context.reply(view = embed_to_view(embed))
         
 
     @set.command(name="delete", aliases=["remove"],
@@ -394,7 +395,7 @@ class Customrole(commands.Cog):
                 description=f"No custom role command with the name `{name}` was found in this guild.",
                 color=0x000000
             )
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
             return
 
         async with aiosqlite.connect(DATABASE_PATH) as db:
@@ -405,7 +406,7 @@ class Customrole(commands.Cog):
             description=f"Custom role command `{name}` has been deleted.",
             color=0x000000
         )
-        await context.reply(embed=embed)
+        await context.reply(view = embed_to_view(embed))
         
 
     @set.command(
@@ -426,7 +427,7 @@ class Customrole(commands.Cog):
                 description="No custom roles have been created for this server.",
                 color=0x000000
             )
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
             return
 
         
@@ -449,7 +450,7 @@ class Customrole(commands.Cog):
                     embed.add_field(name=f"Name: {name}", value=f"Role: {role.mention}", inline=False)
 
             embed.set_footer(text=f"Page {i+1}/{len(chunks)} | These commands are usable by Members having Manage Role permissions.")
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
 
     @set.command(name="reset",
@@ -482,15 +483,15 @@ class Customrole(commands.Cog):
             color=0x000000
         )
                     
-                    await context.reply(embed=embed)
+                    await context.reply(view = embed_to_view(embed))
             else:
                 embed = discord.Embed(description="No configuration found for this server.", color=0x000000)
-                await context.reply(embed=embed)
+                await context.reply(view = embed_to_view(embed))
         else:
             embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                   description="Your role should be above my top role.",
                                   color=0x000000)
-            await context.reply(embed=embed)
+            await context.reply(view = embed_to_view(embed))
 
         
             
@@ -545,7 +546,7 @@ class Customrole(commands.Cog):
 
             
             if reqrole not in message.author.roles:
-                await message.channel.send(embed=discord.Embed(description=f"{emojis.ICONS_WARNING} You need the {reqrole.mention} role to use this command.", color=0x000000))
+                await message.channel.send(view = embed_to_view(discord.Embed(description=f"{emojis.ICONS_WARNING} You need the {reqrole.mention} role to use this command.", color=0x000000)))
                 return
 
             
@@ -565,18 +566,18 @@ class Customrole(commands.Cog):
             try:
                 if role in member.roles:
                     await self.remove_role(role_id=role_id, member=member)
-                    await message.channel.send(embed=discord.Embed(
+                    await message.channel.send(view = embed_to_view(discord.Embed(
                         title=f"{emojis.TICK} Success",
                         description=f"**Removed** the role {role.mention} from {member.mention}.",
                         color=0x000000
-                    ))
+                    )))
                 else:
                     await self.add_role(role_id=role_id, member=member)
-                    await message.channel.send(embed=discord.Embed(
+                    await message.channel.send(view = embed_to_view(discord.Embed(
                         title=f"{emojis.TICK} Success",
                         description=f"**Added** the role {role.mention} to {member.mention}.",
                         color=0x000000
-                    ))
+                    )))
             except discord.Forbidden as e:
                 await message.channel.send("I do not have permission to manage this role to the given user.")
                 print(f"Error: {e}")
@@ -642,6 +643,6 @@ class Customrole(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out support or DM me.
 """

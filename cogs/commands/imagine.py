@@ -8,6 +8,7 @@ import time
 from utils.ai_utils import poly_image_gen, generate_image_prodia
 from prodia.constants import Model
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 blacklisted_words = [
     "naked", "nude", "nudes", "teen", "gay", "lesbian", "porn", "xnxx",
@@ -140,7 +141,7 @@ class AiStuffCog(commands.Cog):
         embed.title = f"Generated Image by {interaction.user.display_name}"
         embed.add_field(name='Prompt', value=f'- {prompt}', inline=False)
         embed.add_field(name='Image Details', value=f"- **Model:** {model.value}\n- **Sampler:** {sampler.value}\n- **Seed:**{seed}", inline=True)
-        embed.set_footer(text=f"© Olympus Development", icon_url=self.bot.user.avatar.url)
+        embed.set_footer(text=f"© REM ALL IN ONE BOT", icon_url=self.bot.user.avatar.url)
         #embed.set_thumbnail(url=img_file)
         if negative:
             embed.add_field(name='Negative Prompt', value=f'- {negative}', inline=False)
@@ -149,12 +150,12 @@ class AiStuffCog(commands.Cog):
             
 
 
-        await interaction.followup.send(embed=embed, file=img_file, ephemeral=True)
+        await interaction.followup.send(view = embed_to_view(embed), file=img_file, ephemeral=True)
 
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import ui
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class BanView(ui.View):
     def __init__(self, user, author):
@@ -101,7 +102,7 @@ class ReasonModal(ui.Modal):
             pass
 
         try:
-            await interaction.response.edit_message(embed=embed, view=self.view)
+            await interaction.response.edit_message(view = embed_to_view(embed, view = self.view))
             for item in self.view.children:
                 item.disabled = True
                 await interaction.message.edit(view=self.view)
@@ -152,29 +153,29 @@ class Ban(commands.Cog):
             embed.set_author(name=f"{user.name} is Already Banned!", icon_url=self.get_user_avatar(user))
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             view = AlreadyBannedView(user=user, author=ctx.author)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message 
             return
 
         if member == ctx.guild.owner:
             error = discord.Embed(color=self.color, description="I can't ban the Server Owner!")
-            error.set_author(name="Error Banning User", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+            error.set_author(name="Error Banning User")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         if isinstance(member, discord.Member) and member.top_role >= ctx.guild.me.top_role:
             error = discord.Embed(color=self.color, description="I can't ban a user with a higher or equal role!")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            error.set_author(name="Error Banning User", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
-            return await ctx.send(embed=error)
+            error.set_author(name="Error Banning User")
+            return await ctx.send(view = embed_to_view(error))
 
         if isinstance(member, discord.Member):
             if ctx.author != ctx.guild.owner:
                 if member.top_role >= ctx.author.top_role:
                     error = discord.Embed(color=self.color, description="You can't ban a user with a higher or equal role!")
                     error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-                    error.set_author(name="Error Banning User", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
-                    return await ctx.send(embed=error)
+                    error.set_author(name="Error Banning User")
+                    return await ctx.send(view = embed_to_view(error))
 
         try:
             await user.send(f"{emojis.ICONS_WARNING} You have been banned from **{ctx.guild.name}** by **{ctx.author}**. Reason: {reason or 'No reason provided'}")
@@ -194,7 +195,7 @@ class Ban(commands.Cog):
         embed.timestamp = discord.utils.utcnow()
 
         view = BanView(user=user, author=ctx.author)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
 
@@ -202,6 +203,6 @@ class Ban(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

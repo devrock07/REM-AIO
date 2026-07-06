@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import aiohttp
 import os
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Status(commands.Cog):
     def __init__(self, bot):
@@ -85,7 +86,7 @@ class Status(commands.Cog):
         requester_avatar_url = ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
         embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=requester_avatar_url)
 
-        await ctx.send(embed=embed, file=file if 'file' in locals() else None)
+        await ctx.send(view = embed_to_view(embed), file=file if 'file' in locals() else None)
         await processing.delete()
 
     def create_spotify_card(self, song_name, album_image_path):
@@ -155,6 +156,6 @@ class Status(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

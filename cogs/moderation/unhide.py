@@ -3,6 +3,7 @@ from utils import emojis
 import discord
 from discord.ext import commands
 from discord import ui
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class HideUnhideView(ui.View):
     def __init__(self, channel, author, ctx):
@@ -39,7 +40,7 @@ class HideUnhideView(ui.View):
         )
         embed.add_field(name=" **Moderator:**", value=self.ctx.author.mention, inline=False)
         embed.set_author(name=f"Successfully Hidden {self.channel.name}")
-        await self.message.edit(embed=embed, view=self)
+        await self.message.edit(view = embed_to_view(embed, view = self))
 
         for item in self.children:
             if item.label != "Delete":
@@ -73,7 +74,7 @@ class Unhide(commands.Cog):
             embed.set_author(name=f"{channel.name} is Already Unhidden")
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             view = HideUnhideView(channel=channel, author=ctx.author, ctx=ctx)  
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
             return
 
@@ -87,7 +88,7 @@ class Unhide(commands.Cog):
         embed.set_author(name=f"Successfully Unhidden {channel.name}")
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
         view = HideUnhideView(channel=channel, author=ctx.author, ctx=ctx)  
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
 
@@ -95,6 +96,6 @@ class Unhide(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

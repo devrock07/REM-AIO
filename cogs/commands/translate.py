@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from deep_translator import GoogleTranslator
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class TranslateCog(commands.Cog):
     def __init__(self, bot):
@@ -38,7 +39,7 @@ class TranslateCog(commands.Cog):
                 icon_url=ctx.author.display_avatar.url
             )
 
-            await msg.edit(content=None, embed=embed)
+            await msg.edit(content=None, view = embed_to_view(embed))
 
         except Exception as e:
             await msg.edit(content=f"❌ Translation failed: `{str(e)}`")

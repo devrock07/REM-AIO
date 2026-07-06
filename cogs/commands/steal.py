@@ -5,6 +5,7 @@ import requests
 from io import BytesIO
 import re
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Steal(commands.Cog):
     def __init__(self, bot):
@@ -31,7 +32,7 @@ class Steal(commands.Cog):
         if emote:
             await self.process_emoji(ctx, emote)
         else:
-            await ctx.send(embed=discord.Embed(title="Steal", description="No emoji or sticker found", color=0x000000))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description="No emoji or sticker found", color=0x000000)))
 
     async def process_emoji(self, ctx, emote):
         try:
@@ -45,28 +46,28 @@ class Steal(commands.Cog):
                     url = f'https://cdn.discordapp.com/emojis/{emoji_id}.png'
                 await self.add_emoji(ctx, url, name, animated=(anim == '<a'))
             else:
-                await ctx.send(embed=discord.Embed(title="Steal", description="Invalid emoji", color=0x000000))
+                await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description="Invalid emoji", color=0x000000)))
         except Exception as e:
-            await ctx.send(embed=discord.Embed(title="Steal", description=f"Failed to add emoji: {str(e)}", color=0x000000))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Failed to add emoji: {str(e)}", color=0x000000)))
 
     async def add_emoji(self, ctx, url, name, animated):
         try:
             if not self.has_emoji_slot(ctx.guild, animated):
-                await ctx.send(embed=discord.Embed(title="Steal", description="No more emoji slots available", color=0x2f3136))
+                await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description="No more emoji slots available", color=0x2f3136)))
                 return
 
             sanitized_name = self.sanitize_name(name)
             response = requests.get(url)
             img = response.content
             emote = await ctx.guild.create_custom_emoji(name=sanitized_name, image=img)
-            await ctx.send(embed=discord.Embed(title="Steal", description=f"Added emoji \"**{emote}**\"!", color=0x000000))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Added emoji \"**{emote}**\"!", color=0x000000)))
         except Exception as e:
-            await ctx.send(embed=discord.Embed(title="Steal", description=f"Failed to add emoji: {str(e)}", color=0x2f3136))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Failed to add emoji: {str(e)}", color=0x2f3136)))
 
     async def add_sticker(self, ctx, url, name):
         try:
             if len(ctx.guild.stickers) >= self.get_max_sticker_count(ctx.guild):
-                await ctx.send(embed=discord.Embed(title="Steal", description="No more sticker slots available", color=0x000000))
+                await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description="No more sticker slots available", color=0x000000)))
                 return
 
             sanitized_name = self.sanitize_name(name)
@@ -74,9 +75,9 @@ class Steal(commands.Cog):
             img = BytesIO(response.content)
             emoji = "⭐"  
             await ctx.guild.create_sticker(name=sanitized_name, description="Added by bot", file=discord.File(img, filename="sticker.png"), emoji=emoji)
-            await ctx.send(embed=discord.Embed(title="Steal", description=f"Added sticker \"**{sanitized_name}**\"!", color=0x000000))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Added sticker \"**{sanitized_name}**\"!", color=0x000000)))
         except Exception as e:
-            await ctx.send(embed=discord.Embed(title="Steal", description=f"Failed to add sticker: {str(e)}", color=0x000000))
+            await ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Failed to add sticker: {str(e)}", color=0x000000)))
 
     def sanitize_name(self, name):
         sanitized = re.sub(r'[^a-zA-Z0-9_]', '_', name)
@@ -135,7 +136,7 @@ class Steal(commands.Cog):
                         animated = sticker.format == discord.StickerFormatType.apng
                         await self.bot.cogs['Steal'].add_emoji(self.ctx, sticker.url, sticker.name.replace(' ', '_'), animated=animated)
                     else:
-                        await self.ctx.send(embed=discord.Embed(title="Steal", description=f"Unsupported sticker format for {sticker.name}", color=0x000000))
+                        await self.ctx.send(view = embed_to_view(discord.Embed(title="Steal", description=f"Unsupported sticker format for {sticker.name}", color=0x000000)))
                 for attachment in self.attachments:
                     await self.bot.cogs['Steal'].add_emoji(self.ctx, attachment.url, attachment.filename.split('.')[0].replace(' ', '_'), animated=False)
                 for emote in self.emojis:
@@ -181,13 +182,13 @@ class Steal(commands.Cog):
                 embed.set_image(url=url)
 
         view = StealView(self.bot, ctx, attachments, stickers, emojis)
-        await ctx.send(embed=embed, view=view)
+        await ctx.send(view = embed_to_view(embed, view = view))
 
 
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

@@ -16,6 +16,7 @@ from pathlib import Path
 import json
 from PIL import Image, ImageDraw, ImageOps
 import io
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 def RandomColor():
@@ -143,7 +144,7 @@ class Fun(commands.Cog):
                 if "items" in data:
                     image = discord.Embed(title=f"Random Image for '{search_query}'", color=discord.Color.random())
                     image.set_image(url=random.choice(data["items"])["link"])
-                    await ctx.reply(embed=image)
+                    await ctx.reply(view = embed_to_view(image))
                 else:
                     await ctx.reply("No images found for that search query.")
 
@@ -162,7 +163,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**{person} is {responses}% Gay** :rainbow:'
     embed.set_footer(text=f'{response}% is your gayness- {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
 
   @commands.command(name="lesbian",
@@ -177,7 +178,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**{person} is {responses}% Lesbian** '
     embed.set_footer(text=f'How lesbian are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="chutiya",
                     aliases=['chu'],
@@ -191,7 +192,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**Abbe {person} to {responses}% Chootiya Ha** 😂'
     embed.set_footer(text=f'How chutiya are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="tharki",
                     help="check someone tharkipan percentage",
@@ -204,7 +205,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**Sala {person} to {responses}% Tharki Nikla** 😂'
     embed.set_footer(text=f'How tharki are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="horny",
                     aliases=['horniness'],
@@ -218,7 +219,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**{person} is {responses}% Horny** 😳'
     embed.set_footer(text=f'How horny are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="cute",
                     aliases=['cuteness'],
@@ -232,7 +233,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**{person} is {responses}% Cute** 🥰'
     embed.set_footer(text=f'How cute are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="intelligence",
                     aliases=['iq'],
@@ -246,7 +247,7 @@ class Fun(commands.Cog):
     responses = random.randrange(1, 150)
     embed.description = f'**{person} has an IQ of {responses}%** '
     embed.set_footer(text=f'How intelligent are you? - {ctx.author.name}')
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="gif", help="Search for a gif and display a random one.", with_app_command=True)
   @blacklist_check()
@@ -259,7 +260,7 @@ class Fun(commands.Cog):
               if "data" in data:
                   gif = discord.Embed(title=f"Random GIF for '{search_query}'", color=discord.Color.random())
                   gif.set_image(url=random.choice(data["data"])["images"]["original"]["url"])
-                  await ctx.reply(embed=gif)
+                  await ctx.reply(view = embed_to_view(gif))
               else:
                   await ctx.reply("No GIFs found for that search query.")
                 
@@ -283,7 +284,7 @@ class Fun(commands.Cog):
             embed = discord.Embed(
               description="Failed to retrieve data. Please check the IP address and try again.",
               color=0xFF0000)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
           
@@ -349,14 +350,14 @@ class Fun(commands.Cog):
             icon_url=self.bot.user.avatar
           )
 
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
       except Exception as e:
         embed = discord.Embed(
           description=f"An error occurred: {str(e)}",
           color=0xFF0000
         )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 ############################
 
@@ -395,7 +396,7 @@ class Fun(commands.Cog):
                     icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
                   )
                   
-                  await ctx.reply(embed=weather_embed)
+                  await ctx.reply(view = embed_to_view(weather_embed))
               else:
                   await ctx.reply("City not found. Please enter a valid city name.")
 
@@ -413,7 +414,7 @@ class Fun(commands.Cog):
         text=f"Banned By {ctx.author}",
         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
       )
-    await ctx.reply(embed=embed)
+    await ctx.reply(view = embed_to_view(embed))
 
 
   @commands.command(name="hug")
@@ -431,7 +432,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="kiss")
   @blacklist_check()
@@ -448,7 +449,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="pat")
   @blacklist_check()
@@ -465,7 +466,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="cuddle")
   @blacklist_check()
@@ -482,7 +483,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="slap")
   @blacklist_check()
@@ -498,7 +499,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="tickle")
   @blacklist_check()
@@ -515,7 +516,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
 
   @commands.command(name="spank")
   @blacklist_check()
@@ -535,7 +536,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=RandomColor())
           embed.set_image(url=image_url)
-          await ctx.send(embed=embed)
+          await ctx.send(view = embed_to_view(embed))
 
   @commands.command(name="kill")
   @blacklist_check()
@@ -551,7 +552,7 @@ class Fun(commands.Cog):
       if image_url:
           embed = discord.Embed(description=description, color=discord.Color.random())
           embed.set_image(url=image_url)
-          await ctx.reply(embed=embed)
+          await ctx.reply(view = embed_to_view(embed))
           
   
     
@@ -574,7 +575,7 @@ class Fun(commands.Cog):
                   )
                   if "url" in data:
                       embed.set_image(url=data["url"])
-                  await ctx.reply(embed=embed)
+                  await ctx.reply(view = embed_to_view(embed))
               else:
                   await ctx.reply("Couldn't retrieve a response from the magic 8ball.")
 
@@ -593,7 +594,7 @@ class Fun(commands.Cog):
                   question = data.get("question")
                   if question:
                       embed= discord.Embed(title="__**TRUTH**__",description=f"{question}", color=0x000000)
-                      await ctx.reply(embed=embed)
+                      await ctx.reply(view = embed_to_view(embed))
                   else:
                       await ctx.send("Couldn't retrieve a truth question. Please try again.")
               else:
@@ -612,7 +613,7 @@ class Fun(commands.Cog):
                   question = data.get("question")
                   if question:
                       embed= discord.Embed(title="__**DARE**__",description=f"{question}", color=0x000000)
-                      await ctx.reply(embed=embed)
+                      await ctx.reply(view = embed_to_view(embed))
                   else:
                       await ctx.send("Couldn't retrieve a dare question. Please try again.")
               else:
@@ -665,7 +666,7 @@ class Fun(commands.Cog):
                 text=f"Detected Language: {detected_lang.upper()} • Requested by {ctx.author}",
                 icon_url=ctx.author.display_avatar.url
             )
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
         else:
             await ctx.send("❌ Translation failed. Please try again later.")
     except Exception as e:

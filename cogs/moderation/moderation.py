@@ -23,6 +23,7 @@ from datetime import datetime, timezone, timedelta
 import sqlite3
 from typing import *
 from discord.utils import utcnow
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 
@@ -139,7 +140,7 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Unlocking all channels in {ctx.guild.name} .")
                       await interaction.response.edit_message(
-                       embed=embed1, view=None)
+                       view = embed_to_view(embed1, view = None))
                       for channel in interaction.guild.channels:
                           try:
                               await channel.set_permissions(
@@ -157,12 +158,9 @@ class Moderation(commands.Cog):
                     await interaction.response.edit_message(
                          content=
                            f"{emojis.ICONS_WARNING} | It seems I'm missing the necessary permissions. Please grant me the `manage roles` permissions and try again.",
-                              embed=None,
-                                  view=None)
+                              )
               else:
                 await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
           async def button1_callback(interaction: discord.Interaction):   
@@ -171,11 +169,9 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Cancelled, I won't proceed with unlocking any channel.")
                   await interaction.response.edit_message(
-                      embed=embed2, view=None)   
+                      view = embed_to_view(embed2, view = None))   
               else:
                   await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
           embed = discord.Embed(
                   color=self.color,
@@ -186,7 +182,7 @@ class Moderation(commands.Cog):
           view.add_item(button)
           view.add_item(button1)
           embed.set_footer(text="Please click either 'Confirm' or 'Cancel' to proceed. You have 30 seconds to decide!")
-          await ctx.reply(embed=embed, view=view, mention_author=False,delete_after=30)     
+          await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False,delete_after=30)     
 
 
       else:
@@ -195,7 +191,7 @@ class Moderation(commands.Cog):
                 color=0x000000)
           embed5.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                        icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await ctx.send(embed=embed5, mention_author=False)  
+          await ctx.send(view = embed_to_view(embed5), mention_author=False)  
 
 
 
@@ -224,7 +220,7 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Locking all channels in {ctx.guild.name}...")
                       await interaction.response.edit_message(
-                       embed=embed1, view=None)
+                       view = embed_to_view(embed1, view = None))
                       for channel in interaction.guild.channels:
                           try:
                               await channel.set_permissions(ctx.guild.default_role,
@@ -242,12 +238,9 @@ class Moderation(commands.Cog):
                     await interaction.response.edit_message(
                          content=
                            f"{emojis.ICONS_WARNING} | It seems I'm missing the necessary permissions. Please grant me the `manage roles` permissions and try again.",
-                              embed=None,
-                                  view=None)
+                              )
               else:
                 await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
           async def button1_callback(interaction: discord.Interaction):   
@@ -256,11 +249,9 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Cancelled, I won't proceed with locking any channel.")
                   await interaction.response.edit_message(
-                      embed=embed2, view=None)   
+                      view = embed_to_view(embed2, view = None))   
               else:
                   await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
           embed = discord.Embed(
                   color=self.color,
@@ -271,7 +262,7 @@ class Moderation(commands.Cog):
           view.add_item(button)
           view.add_item(button1)
           embed.set_footer(text=f"Please click either 'Confirm' or 'Cancel' to proceed. You have 30 seconds to decide!")
-          await ctx.reply(embed=embed, view=view, mention_author=False,delete_after=30)     
+          await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False,delete_after=30)     
 
       else:
           denied = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
@@ -279,7 +270,7 @@ class Moderation(commands.Cog):
               color=0x000000)
           denied.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                      icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await ctx.send(embed=denied, mention_author=False)
+          await ctx.send(view = embed_to_view(denied), mention_author=False)
           
 
   @commands.hybrid_command(name="give",
@@ -302,20 +293,20 @@ class Moderation(commands.Cog):
             description="I can't manage roles for a user with a higher or equal role!"
         )
 
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Error")
         error.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
     if ctx.author != ctx.guild.owner and ctx.author.top_role <= member.top_role:
         error = discord.Embed(
             color=self.color,
             description="You can't manage roles for a user with a higher or equal role than yours!"
         )
-        error.set_author(name="Access Denied", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Access Denied")
         error.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
     try:
         if role not in member.roles:
@@ -324,7 +315,7 @@ class Moderation(commands.Cog):
                 color=self.color,
                 description=f"Successfully **added** role {role.name} to {member.mention}."
             )
-            success.set_author(name="Role Added", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+            success.set_author(name="Role Added")
             success.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         else:
@@ -333,22 +324,22 @@ class Moderation(commands.Cog):
                 color=self.color,
                 description=f"Successfully **removed** role {role.name} from {member.mention}."
             )
-            success.set_author(name="Role Removed", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+            success.set_author(name="Role Removed")
             success.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        await ctx.send(embed=success)
+        await ctx.send(view = embed_to_view(success))
     except discord.Forbidden:
         error = discord.Embed(
             color=self.color,
             description=f"{emojis.ICONS_WARNING} I don't have permission to manage roles for this user!"
         )
-        await ctx.send(embed=error)
+        await ctx.send(view = embed_to_view(error))
     except Exception as e:
         error = discord.Embed(
             color=self.color,
             description=f"{emojis.ICONS_WARNING} An unexpected error occurred: {str(e)}"
         )
-        await ctx.send(embed=error)
+        await ctx.send(view = embed_to_view(error))
 
 
 
@@ -376,7 +367,7 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Hiding all channels in {ctx.guild.name} ...")
                       await interaction.response.edit_message(
-                       embed=embed1, view=None)
+                       view = embed_to_view(embed1, view = None))
                       for channel in interaction.guild.channels:
                           try:
                               await channel.set_permissions(ctx.guild.default_role, view_channel=False,
@@ -391,12 +382,9 @@ class Moderation(commands.Cog):
                     await interaction.response.edit_message(
                          content=
                            f"{emojis.ICONS_WARNING} | It seems I'm missing the necessary permissions. Please grant me the `manage channels` permissions and try again.",
-                              embed=None,
-                                  view=None)
+                              )
               else:
                 await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
           async def button1_callback(interaction: discord.Interaction):   
@@ -405,11 +393,9 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Cancelled, I won't proceed with hiding any channel.")
                   await interaction.response.edit_message(
-                      embed=embed2, view=None)   
+                      view = embed_to_view(embed2, view = None))   
               else:
                   await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
           embed = discord.Embed(
                   color=self.color,
@@ -420,7 +406,7 @@ class Moderation(commands.Cog):
           view.add_item(button)
           view.add_item(button1)
           embed.set_footer(text=f"Please click either 'Confirm' or 'Cancel' to proceed. You have 30 seconds to decide!")
-          await ctx.reply(embed=embed, view=view, mention_author=False,delete_after=30)
+          await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False,delete_after=30)
 
       else:
           denied = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
@@ -428,7 +414,7 @@ class Moderation(commands.Cog):
               color=0x000000)
           denied.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                      icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await ctx.send(embed=denied, mention_author=False)
+          await ctx.send(view = embed_to_view(denied), mention_author=False)
 
   @commands.hybrid_command(name="unhideall", help="Unhides all the channels in the server.",
                     usage="unhideall")
@@ -454,7 +440,7 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Unhiding all channels in {ctx.guild.name} .")
                       await interaction.response.edit_message(
-                       embed=embed1, view=None)
+                       view = embed_to_view(embed1, view = None))
                       for channel in interaction.guild.channels:
                           try:
                               await channel.set_permissions(ctx.guild.default_role, view_channel=True,
@@ -469,12 +455,9 @@ class Moderation(commands.Cog):
                     await interaction.response.edit_message(
                          content=
                            f"{emojis.ICONS_WARNING} | It seems I'm missing the necessary permissions. Please grant me the `manage channels` permissions and try again.",
-                              embed=None,
-                                  view=None)
+                              )
               else:
                 await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
           async def button1_callback(interaction: discord.Interaction):   
@@ -483,11 +466,9 @@ class Moderation(commands.Cog):
                      color=self.color,
                     description=f"Cancelled, I won't proceed with unhiding any channel.")
                   await interaction.response.edit_message(
-                      embed=embed2, view=None)   
+                      view = embed_to_view(embed2, view = None))   
               else:
                   await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
           embed = discord.Embed(
                   color=self.color,
@@ -498,7 +479,7 @@ class Moderation(commands.Cog):
           view.add_item(button)
           view.add_item(button1)
           embed.set_footer(text=f"Please click either 'Confirm' or 'Cancel' to proceed. You have 30 seconds to decide!")
-          await ctx.reply(embed=embed, view=view, mention_author=False,delete_after=30)     
+          await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False,delete_after=30)     
 
       else:
           denied = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
@@ -506,7 +487,7 @@ class Moderation(commands.Cog):
               color=0x000000)
           denied.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                      icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await ctx.send(embed=denied, mention_author=False)
+          await ctx.send(view = embed_to_view(denied), mention_author=False)
 
 
 
@@ -523,10 +504,10 @@ class Moderation(commands.Cog):
   @commands.guild_only()
   async def _prefix(self, ctx: commands.Context, prefix: str):
       if not prefix:
-          await ctx.reply(embed=discord.Embed(title=f"{emojis.CROSSICON} Error",
+          await ctx.reply(view = embed_to_view(discord.Embed(title=f"{emojis.CROSSICON} Error",
                 description="Prefix cannot be empty. Please provide a valid prefix.",
                 color=self.color
-            ))
+            )))
           return
           
       data = await getConfig(ctx.guild.id)
@@ -537,14 +518,14 @@ class Moderation(commands.Cog):
                 description=f"Changed Prefix For this guild to `{prefix}`\n\nNew Prefix for **{ctx.guild.name}** is : `{prefix}`\nUse `{prefix}help` For More.",
                 color=self.color
                              )
-          await ctx.reply(embed=embed1)
+          await ctx.reply(view = embed_to_view(embed1))
       else:
           denied = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
               description="Your role should be above my top role.",
               color=0x000000)
           denied.set_footer(text=f"“{ctx.command.qualified_name}” Command executed by {ctx.author}",
                      icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await ctx.send(embed=denied, mention_author=False)
+          await ctx.send(view = embed_to_view(denied), mention_author=False)
         
 
 
@@ -559,10 +540,10 @@ class Moderation(commands.Cog):
             color=self.color,
             description="I don't have permission to manage channels!"
         )
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Error")
         error.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
 
     try:
@@ -572,24 +553,24 @@ class Moderation(commands.Cog):
             color=self.color,
             description=f"{channel.name} has been successfully cloned"
         )
-        success.set_author(name="Success", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        success.set_author(name="Success")
         success.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        await ctx.send(embed=success)
+        await ctx.send(view = embed_to_view(success))
     except discord.Forbidden:
         error = discord.Embed(
             color=self.color,
             description="I don't have permission to clone channels!"
         )
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
-        await ctx.send(embed=error)
+        error.set_author(name="Error")
+        await ctx.send(view = embed_to_view(error))
     except Exception as e:
         error = discord.Embed(
             color=self.color,
             description=f"An error occurred while trying to clone the channel: {str(e)}"
         )
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
-        await ctx.send(embed=error)
+        error.set_author(name="Error")
+        await ctx.send(view = embed_to_view(error))
         
 
   @commands.hybrid_command(name="nick",
@@ -608,10 +589,10 @@ class Moderation(commands.Cog):
             color=self.color,
             description="I can't change the nickname of the server owner!"
         )
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Error")
         error.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
     
     if member.top_role >= ctx.guild.me.top_role:
@@ -619,10 +600,10 @@ class Moderation(commands.Cog):
             color=self.color,
             description="I can't change the nickname of a user with a higher or equal role than mine!"
         )
-        error.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Error")
         error.set_footer(text=f"Requested by {ctx.author}",
             icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
     
     if ctx.author != ctx.guild.owner and ctx.author.top_role <= member.top_role:
@@ -630,10 +611,10 @@ class Moderation(commands.Cog):
             color=self.color,
             description="You can't change the nickname of a user with a higher or equal role than you!"
         )
-        error.set_author(name="Access Denied", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error.set_author(name="Access Denied")
         error.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        return await ctx.send(embed=error)
+        return await ctx.send(view = embed_to_view(error))
 
     try:
         await member.edit(nick=name)
@@ -642,7 +623,7 @@ class Moderation(commands.Cog):
                 color=self.color,
                 description=f"Successfully changed nickname of {member.mention} to {name}."
             )
-            success.set_author(name="Nickname Updated", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+            success.set_author(name="Nickname Updated")
             success.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         else:
@@ -650,22 +631,22 @@ class Moderation(commands.Cog):
                 color=self.color,
                 description=f"Successfully cleared nickname of {member.mention}."
             )
-            success.set_author(name="Nickname Cleared", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+            success.set_author(name="Nickname Cleared")
             success.set_footer(text=f"Requested by {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-        await ctx.send(embed=success)
+        await ctx.send(view = embed_to_view(success))
     except discord.Forbidden:
         error = discord.Embed(
             color=self.color,
             description=f"{emojis.ICONS_WARNING} | I don't have permission to manage this user's nickname!"
         )
-        await ctx.send(embed=error)
+        await ctx.send(view = embed_to_view(error))
     except Exception as e:
         error = discord.Embed(
             color=self.color,
             description=f"{emojis.ICONS_WARNING} | An error occurred while trying to change the nickname: {str(e)}"
         )
-        await ctx.send(embed=error)
+        await ctx.send(view = embed_to_view(error))
         
 
   @commands.hybrid_command(name="nuke", help="Nukes a channel", usage="nuke")
@@ -693,30 +674,25 @@ class Moderation(commands.Cog):
           embed = discord.Embed(
             description="Channel has been Successfully nuked by **`%s`**" % (ctx.author),
             color=self.color)
-          embed.set_author(name="Channel Nuked", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+          embed.set_author(name="Channel Nuked")
           embed.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-          await newchannel.send(embed=embed)
+          await newchannel.send(view = embed_to_view(embed))
         else:
           await interaction.response.edit_message(
             content=
             f"{emojis.ICONS_WARNING} | It seems I'm missing the necessary permissions. Please grant me the `manage channel` permissions and try again.",
-            embed=None,
-            view=None)
+            )
       else:
         await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
     async def button1_callback(interaction: discord.Interaction):
       if interaction.user == ctx.author:
         await interaction.response.edit_message(
-          content="Cancelled, I won't proceed with nuking channel.", embed=None, view=None)
+          content="Cancelled, I won't proceed with nuking channel.", )
       else:
         await interaction.response.send_message("Oops! It looks like that message isn't from you. You need to run the command yourself to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
     embed = discord.Embed(
@@ -728,7 +704,7 @@ class Moderation(commands.Cog):
     view.add_item(button)
     view.add_item(button1)
     embed.set_footer(text="Please click either 'Confirm' or 'Cancel' to proceed. You have 30 seconds to decide!")
-    await ctx.reply(embed=embed, view=view, mention_author=False,delete_after=30)
+    await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False,delete_after=30)
 
 
 
@@ -744,22 +720,22 @@ class Moderation(commands.Cog):
     if seconds > 120:
       embed=discord.Embed(description="Slowmode can not be over 2 minutes",
                             color=self.color)
-      embed.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+      embed.set_author(name="Error")
       embed.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      return await ctx.send(embed=embed)
+      return await ctx.send(view = embed_to_view(embed))
     if seconds == 0:
       await ctx.channel.edit(slowmode_delay=seconds)
-      await ctx.send(embed=discord.Embed(
-        title="Slowmode", description="Slowmode is disabled", color=self.color))
+      await ctx.send(view = embed_to_view(discord.Embed(
+        title="Slowmode", description="Slowmode is disabled", color=self.color)))
     else:
       await ctx.channel.edit(slowmode_delay=seconds)
       embed=discord.Embed(description="Successfully Set slowmode to **`%s`**" % (seconds),
                             color=self.color)
-      embed.set_author(name="Slowmode Activated", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+      embed.set_author(name="Slowmode Activated")
       embed.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.send(embed=embed)
+      await ctx.send(view = embed_to_view(embed))
       
 
   @commands.hybrid_command(name="unslowmode",
@@ -774,10 +750,10 @@ class Moderation(commands.Cog):
   async def _unslowmode(self, ctx: commands.Context):
     await ctx.channel.edit(slowmode_delay=0)
     embed=discord.Embed(description="Successfully Disabled slowmode", color=self.color)
-    embed.set_author(name="Unslowmode", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+    embed.set_author(name="Unslowmode")
     embed.set_footer(text=f"Requested by {ctx.author}",
                         icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-    await ctx.send(embed=embed)
+    await ctx.send(view = embed_to_view(embed))
 
 
 
@@ -865,12 +841,12 @@ class Moderation(commands.Cog):
             description=f"{role.mention} is higher than my role. Please move my role above it.",
             color=self.color
         )
-        error_embed.set_author(name="Error", icon_url="https://cdn.discordapp.com/attachments/1329411292532051999/1329451540028719255/Quantum_X.jpeg?ex=678a63bb&is=6789123b&hm=917647b44f40b887260074c1ccc602f0b7b8f4054c18ccc5ab6a5824bf77a9aa&")
+        error_embed.set_author(name="Error")
         error_embed.set_footer(
             text=f"Requested by {ctx.author}",
             icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
         )
-        return await ctx.send(embed=error_embed)
+        return await ctx.send(view = embed_to_view(error_embed))
 
     
     if ctx.author != ctx.guild.owner and ctx.author.top_role.position <= role.position:
@@ -883,7 +859,7 @@ class Moderation(commands.Cog):
             text=f"Requested by {ctx.author}",
             icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
         )
-        return await ctx.send(embed=error_embed)
+        return await ctx.send(view = embed_to_view(error_embed))
 
     
     if icon is None:
@@ -907,7 +883,7 @@ class Moderation(commands.Cog):
                     text=f"Requested by {ctx.author}",
                     icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
                 )
-                return await ctx.send(embed=success_embed)
+                return await ctx.send(view = embed_to_view(success_embed))
             except Exception as e:
                 print(e)
                 return await ctx.reply("Failed to change the icon of the role.")
@@ -922,7 +898,7 @@ class Moderation(commands.Cog):
                 text=f"Requested by {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
             )
-            return await ctx.reply(embed=removal_embed, mention_author=False)
+            return await ctx.reply(view = embed_to_view(removal_embed), mention_author=False)
 
     
     if isinstance(icon, discord.Emoji) or isinstance(icon, discord.PartialEmoji):
@@ -940,7 +916,7 @@ class Moderation(commands.Cog):
                 text=f"Requested by {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
             )
-            return await ctx.reply(embed=success_embed, mention_author=False)
+            return await ctx.reply(view = embed_to_view(success_embed), mention_author=False)
         except Exception as e:
             print(e)
             return await ctx.reply("Failed to change the icon of the role.")
@@ -957,7 +933,7 @@ class Moderation(commands.Cog):
                 description=f"{emojis.TICK}| Successfully changed the icon for {role.mention}.",
                 color=self.color
             )
-            return await ctx.reply(embed=success_embed, mention_author=False)
+            return await ctx.reply(view = embed_to_view(success_embed), mention_author=False)
         except Exception as e:
             print(e)
             return await ctx.reply("An error occurred while changing the icon for the role.")
@@ -988,7 +964,7 @@ class Moderation(commands.Cog):
       if interaction.user == ctx.author:
         if interaction.guild.me.guild_permissions.ban_members:
           await interaction.response.edit_message(
-            content="Unbanning All Banned Members...", embed=None, view=None)
+            content="Unbanning All Banned Members...", )
           async for idk in interaction.guild.bans(limit=None):
             await interaction.guild.unban(
               user=idk.user,
@@ -1000,22 +976,17 @@ class Moderation(commands.Cog):
           await interaction.response.edit_message(
             content=
             "I am missing `ban members` in this Guil.",
-            embed=None,
-            view=None)
+            )
       else:
         await interaction.response.send_message("Uh oh! That message doesn't belong to you.\nYou must run this command to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
     async def button1_callback(interaction: discord.Interaction):
       if interaction.user == ctx.author:
         await interaction.response.edit_message(
-          content="Cancelled, I will Not unban anyone.", embed=None, view=None)
+          content="Cancelled, I will Not unban anyone.", )
       else:
         await interaction.response.send_message("Uh oh! That message doesn't belong to you.\nYou must run this command to interact with it.",
-                                                embed=None,
-                                                view=None,
                                                 ephemeral=True)
 
     embed = discord.Embed(
@@ -1027,7 +998,7 @@ class Moderation(commands.Cog):
     button1.callback = button1_callback
     view.add_item(button)
     view.add_item(button1)
-    await ctx.reply(embed=embed, view=view, mention_author=False)
+    await ctx.reply(view = embed_to_view(embed, view = view), mention_author=False)
   
   @commands.hybrid_command(name="audit",
                            help="See recents audit log action in the server .")
@@ -1058,5 +1029,5 @@ Reason: `{entry.reason}`\n\n''')
                           description=f">>> {str}",
                           color=0x000000)
     embed.set_footer(text=f"Audit Log Actions For {ctx.guild.name}")
-    await ctx.reply(embed=embed, mention_author=False)
+    await ctx.reply(view = embed_to_view(embed), mention_author=False)
       

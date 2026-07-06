@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord.ui import View, Button
 import aiosqlite
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Extraowner(commands.Cog):
     def __init__(self, bot):
@@ -36,16 +37,16 @@ class Extraowner(commands.Cog):
                 description="❌ | Your Server Doesn't Meet My 30 Member Criteria",
                 color=0x000000
             )
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
-        Olympus = ['767979794411028491', '767979794411028491']
-        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in Olympus:
+        REM_BYPASS_IDS = ['767979794411028491', '767979794411028491']
+        if ctx.author.id != ctx.guild.owner_id and str(ctx.author.id) not in REM_BYPASS_IDS:
             embed = discord.Embed(title="Access Denied",
                                   description="Only Server Owner Can Run This Command",
                                   color=0x000000
             )
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             return
 
         if option is None:
@@ -59,7 +60,7 @@ class Extraowner(commands.Cog):
             embed.add_field(name="__**Extraowner Reset**__", value=f"To Reset Extra Owner, Use - **{pre}extraowner reset**")
             embed.add_field(name="__**Extraowner View**__", value=f"To View Extra Owner, Use - **{pre}extraowner view**")
             embed.set_thumbnail(url=ctx.bot.user.avatar.url)
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
             return
 
         
@@ -69,7 +70,7 @@ class Extraowner(commands.Cog):
                     description="Please Provide a Valid User Mention or ID to Set as Extra Owner!",
                     color=0x000000
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
                 return
 
             
@@ -79,11 +80,11 @@ class Extraowner(commands.Cog):
                 description=f"**Are you sure you want to set {user.mention} as the Extra Owner?**",
                 color=0x000000
             )
-            message = await ctx.reply(embed=embed, view=view)
+            message = await ctx.reply(view = embed_to_view(embed, view = view))
             await view.wait()
 
             if view.value is None:
-                await message.edit(content=" Confirmation timed out.", embed=None, view=None)
+                await message.edit(content=" Confirmation timed out.", )
             elif view.value:
                 await self.db.execute('INSERT OR REPLACE INTO extraowners (guild_id, owner_id) VALUES (?, ?)', (guild_id, user.id))
                 await self.db.commit()
@@ -91,9 +92,9 @@ class Extraowner(commands.Cog):
                     description=f"Added {user.mention} As Extraowner",
                     color=0x000000
                 )
-                await message.edit(embed=embed, view=None)
+                await message.edit(view = embed_to_view(embed, view = None))
             else:
-                await message.edit(content=f"{emojis.CROSSICON} Action cancelled.", embed=None, view=None)
+                await message.edit(content=f"{emojis.CROSSICON} Action cancelled.", )
 
         
         elif option.lower() == 'reset':
@@ -105,7 +106,7 @@ class Extraowner(commands.Cog):
                     description="No extra owner has been designated for this guild.",
                     color=0x000000
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
             else:
                 
                 view = ConfirmView(ctx)
@@ -114,11 +115,11 @@ class Extraowner(commands.Cog):
                     description="**Are you sure you want to reset the Extra Owner?**",
                     color=0x000000
                 )
-                message = await ctx.reply(embed=embed, view=view)
+                message = await ctx.reply(view = embed_to_view(embed, view = view))
                 await view.wait()
 
                 if view.value is None:
-                    await message.edit(content=" Confirmation timed out.", embed=None, view=None)
+                    await message.edit(content=" Confirmation timed out.", )
                 elif view.value:
                     await self.db.execute('DELETE FROM extraowners WHERE guild_id = ?', (guild_id,))
                     await self.db.commit()
@@ -126,9 +127,9 @@ class Extraowner(commands.Cog):
                         description="Disabled Extraowner Configuration!",
                         color=0x000000
                     )
-                    await message.edit(embed=embed, view=None)
+                    await message.edit(view = embed_to_view(embed, view = None))
                 else:
-                    await message.edit(content=f"{emojis.CROSSICON} Action canceled.", embed=None, view=None)
+                    await message.edit(content=f"{emojis.CROSSICON} Action canceled.", )
 
         elif option.lower() == 'view':
             async with self.db.execute('SELECT owner_id FROM extraowners WHERE guild_id = ?', (guild_id,)) as cursor:
@@ -139,13 +140,13 @@ class Extraowner(commands.Cog):
                     description="No extra owner is currently assigned.",
                     color=0x000000
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
             else:
                 embed = discord.Embed(
                     description=f"Current Extraowner is <@{row[0]}>",
                     color=0x000000
                 )
-                await ctx.reply(embed=embed)
+                await ctx.reply(view = embed_to_view(embed))
 
 class ConfirmView(View):
     def __init__(self, ctx):

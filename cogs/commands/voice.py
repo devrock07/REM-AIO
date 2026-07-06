@@ -9,6 +9,7 @@ from typing import Optional, Union
 from discord.ext.commands import Context
 from utils import Paginator, DescriptionEmbedPaginator, FieldPagePaginator, TextPaginator
 from utils import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 class Voice(commands.Cog):
@@ -43,7 +44,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         ch = member.voice.channel.mention
         await member.edit(voice_channel=None,
                           reason=f"Disconnected by {str(ctx.author)}")
@@ -54,7 +55,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="kickall",
                 help="Disconnect all members from the voice channel.",
@@ -76,7 +77,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         ch = ctx.author.voice.channel.mention
         for member in ctx.author.voice.channel.members:
@@ -91,7 +92,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="mute",
                 help="mute a member in voice channel .",
@@ -110,7 +111,7 @@ class Voice(commands.Cog):
                 text=f"Requested by: {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         if member.voice is None:
             embed = discord.Embed(
@@ -122,7 +123,7 @@ class Voice(commands.Cog):
                 text=f"Requested by: {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         if member.voice.mute:
             embed = discord.Embed(
@@ -134,7 +135,7 @@ class Voice(commands.Cog):
                 text=f"Requested by: {ctx.author}",
                 icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
             )
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
 
         await member.edit(mute=True)
         embed = discord.Embed(
@@ -146,7 +147,7 @@ class Voice(commands.Cog):
             text=f"Requested by: {ctx.author}",
             icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url
         )
-        return await ctx.reply(embed=embed)
+        return await ctx.reply(view = embed_to_view(embed))
 
     @vc.command(name="unmute",
                 help="Unmute a member in the voice channel.",
@@ -167,7 +168,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if member.voice.mute == False:
             embed2 = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -177,7 +178,7 @@ class Voice(commands.Cog):
             embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed2)
+            return await ctx.reply(view = embed_to_view(embed2))
         ch = member.voice.channel.mention
         embed3 = discord.Embed(title=f"{emojis.TICK} Success",
 
@@ -187,7 +188,7 @@ class Voice(commands.Cog):
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed3.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
         await member.edit(mute=False, reason=f"Unmuted by {str(ctx.author)}")
-        return await ctx.reply(embed=embed3)
+        return await ctx.reply(view = embed_to_view(embed3))
 
     @vc.command(name="muteall",
                 help="Mute all members in a voice channel.",
@@ -208,7 +209,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         ch = ctx.author.voice.channel.mention
         for member in ctx.author.voice.channel.members:
@@ -224,7 +225,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="unmuteall",
                 help="Unmute all members in a voice channel.",
@@ -245,7 +246,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         ch = ctx.author.voice.channel.mention
         for member in ctx.author.voice.channel.members:
@@ -261,7 +262,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="deafen",
                 help="Deafen a user in a voice channel.",
@@ -282,7 +283,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if member.voice.deaf == True:
             embed2 = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -292,7 +293,7 @@ class Voice(commands.Cog):
             embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed2)
+            return await ctx.reply(view = embed_to_view(embed2))
         ch = member.voice.channel.mention
         embed3 = discord.Embed(title=f"{emojis.TICK} Success",
 
@@ -302,7 +303,7 @@ class Voice(commands.Cog):
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed3.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
         await member.edit(deafen=True, reason=f"Deafen by {str(ctx.author)}")
-        return await ctx.reply(embed=embed3)
+        return await ctx.reply(view = embed_to_view(embed3))
 
     @vc.command(name="undeafen",
                 help="Undeafen a User in a voice channel .",
@@ -323,7 +324,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if member.voice.deaf == False:
             embed2 = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -333,7 +334,7 @@ class Voice(commands.Cog):
             embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed2)
+            return await ctx.reply(view = embed_to_view(embed2))
         ch = member.voice.channel.mention
         embed3 = discord.Embed(title=f"{emojis.TICK} Success",
 
@@ -344,7 +345,7 @@ class Voice(commands.Cog):
         embed3.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
         await member.edit(deafen=False,
                           reason=f"Undeafen by {str(ctx.author)}")
-        return await ctx.reply(embed=embed3)
+        return await ctx.reply(view = embed_to_view(embed3))
 
     @vc.command(name="deafenall",
                 help="Deafen all Ussr in a voice channel.",
@@ -365,7 +366,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         ch = ctx.author.voice.channel.mention
         for member in ctx.author.voice.channel.members:
@@ -381,7 +382,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                            icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="undeafenall",
                 help="undeafen all member in a voice channel .",
@@ -402,7 +403,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         ch = ctx.author.voice.channel.mention
         for member in ctx.author.voice.channel.members:
@@ -419,7 +420,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                            icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="moveall",
                 help="Move all members from the voice channel to the specified voice channel.",
@@ -440,7 +441,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         try:
             ch = ctx.author.voice.channel.mention
             nch = channel.mention
@@ -458,7 +459,7 @@ class Voice(commands.Cog):
             embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            await ctx.reply(embed=embed2)
+            await ctx.reply(view = embed_to_view(embed2))
         except:
             embed3 = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -467,7 +468,7 @@ class Voice(commands.Cog):
             embed3.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed3.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            await ctx.reply(embed=embed3)
+            await ctx.reply(view = embed_to_view(embed3))
 
     
 
@@ -490,7 +491,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         count = 0
         for vc in ctx.guild.voice_channels:
             for member in vc.members:
@@ -508,7 +509,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
 
     @vc.command(name="move",
@@ -530,7 +531,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if channel == member.voice.channel:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -540,7 +541,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         await member.edit(voice_channel=channel,
                           reason=f"Moved by {str(ctx.author)}")
         embed2 = discord.Embed(title=f"{emojis.TICK} Success",
@@ -550,7 +551,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
         
 
     @vc.command(name="pull",
@@ -572,7 +573,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if member.voice is None:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -582,7 +583,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         if member.voice.channel == ctx.author.voice.channel:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
 
@@ -592,7 +593,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         await member.edit(voice_channel=ctx.author.voice.channel,
                           reason=f"Pulled by {str(ctx.author)}")
         embed2 = discord.Embed(title=f"{emojis.TICK} Success",
@@ -602,7 +603,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="lock",
                 help="Locks the voice channel so no one can join.",
@@ -623,7 +624,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         ch = ctx.author.voice.channel.mention
         await ctx.author.voice.channel.set_permissions(ctx.guild.default_role,
                                                        connect=False,
@@ -635,7 +636,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="unlock",
                 help="Unlocks the voice channel so anyone can join.",
@@ -656,7 +657,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         ch = ctx.author.voice.channel.mention
         await ctx.author.voice.channel.set_permissions(ctx.guild.default_role,
                                                        connect=True,
@@ -668,7 +669,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="private",
                 help="Makes the voice channel private.",
@@ -689,7 +690,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         ch = ctx.author.voice.channel.mention
         await ctx.author.voice.channel.set_permissions(ctx.guild.default_role,
                                                        connect=False,
@@ -702,7 +703,7 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
     @vc.command(name="unprivate",
                 help="Makes the voice channel public.",
@@ -723,7 +724,7 @@ class Voice(commands.Cog):
             embed.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-            return await ctx.reply(embed=embed)
+            return await ctx.reply(view = embed_to_view(embed))
         ch = ctx.author.voice.channel.mention
         await ctx.author.voice.channel.set_permissions(ctx.guild.default_role,
                                                        connect=True,
@@ -736,11 +737,11 @@ class Voice(commands.Cog):
         embed2.set_footer(text=f"Requested by: {ctx.author}",
                                icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
         embed2.set_thumbnail(url="https://cdn.discordapp.com/emojis/1279464563150032991.png")
-        return await ctx.reply(embed=embed2)
+        return await ctx.reply(view = embed_to_view(embed2))
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

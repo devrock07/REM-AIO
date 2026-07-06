@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import ui
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class KickView(ui.View):
     def __init__(self, member):
@@ -68,7 +69,7 @@ class Kick(commands.Cog):
                 color=self.color
             )
             view = KickView(member)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
             return
 
@@ -101,13 +102,13 @@ class Kick(commands.Cog):
         embed.timestamp = discord.utils.utcnow()
 
         view = KickView(member)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

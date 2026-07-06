@@ -6,6 +6,7 @@ from discord.ext import commands
 from utils.config import serverLink
 from core import axon, Cog, Context
 from utils.Tools import get_ignore_data
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 log = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class Errors(Cog):
       embed = discord.Embed(color=0x000000, description="You can't use my commands in DMs.")
       embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
       embed.set_thumbnail(url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.reply(embed=embed, delete_after=20)
+      await ctx.reply(view = embed_to_view(embed), delete_after=20)
       return
 
     if isinstance(error, commands.TooManyArguments):
@@ -70,7 +71,7 @@ class Errors(Cog):
       embed.set_author(name="Cooldown", icon_url=self.client.user.avatar.url)
       
       embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.reply(embed=embed, delete_after=10)
+      await ctx.reply(view = embed_to_view(embed), delete_after=10)
       return
 
     if isinstance(error, commands.MaxConcurrencyReached):
@@ -78,7 +79,7 @@ class Errors(Cog):
       embed.set_author(name="Command in Progress.", icon_url=self.client.user.avatar.url)
       
       embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.reply(embed=embed, delete_after=10)
+      await ctx.reply(view = embed_to_view(embed), delete_after=10)
       ctx.command.reset_cooldown(ctx)
       return
 
@@ -89,7 +90,7 @@ class Errors(Cog):
       embed.set_author(name="Missing Permissions", icon_url=self.client.user.avatar.url)
       
       embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-      await ctx.reply(embed=embed, delete_after=7)
+      await ctx.reply(view = embed_to_view(embed), delete_after=7)
       ctx.command.reset_cooldown(ctx)
       return
 

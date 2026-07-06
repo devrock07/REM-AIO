@@ -6,6 +6,7 @@ from discord import ui
 from datetime import timedelta
 import re
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class TimeoutView(ui.View):
     def __init__(self, user, author):
@@ -93,7 +94,7 @@ class ReasonModal(ui.Modal):
         embed.timestamp = discord.utils.utcnow()
 
         await self.user.edit(timed_out_until=None, reason=f"Unmute requested by {self.author}")
-        await interaction.response.edit_message(embed=embed, view=self.view)
+        await interaction.response.edit_message(view = embed_to_view(embed, view = self.view))
         for item in self.view.children:
             item.disabled = True
         await interaction.message.edit(view=self.view)
@@ -140,7 +141,7 @@ class Mute(commands.Cog):
             embed.set_author(name=f"{user.name} is Already Timed Out!", icon_url=self.get_user_avatar(user))
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             view = AlreadyTimedoutView(user=user, author=ctx.author)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
             return
 
@@ -148,19 +149,19 @@ class Mute(commands.Cog):
             error = discord.Embed(color=self.color, description="You can't timeout the Server Owner!")
             error.set_author(name="Error Timing Out User")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         if ctx.author != ctx.guild.owner and user.top_role >= ctx.author.top_role:
             error = discord.Embed(color=self.color, description="You can't timeout users having higher or equal role than yours!")
             error.set_author(name="Error Timing Out User")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         if user.top_role >= ctx.guild.me.top_role:
             error = discord.Embed(color=self.color, description="I can't timeout users having higher or equal role than mine.")
             error.set_author(name="Error Timing Out User")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         time_delta, duration_text = self.parse_time(time) if time else (timedelta(hours=24), "24 hours")
 
@@ -168,7 +169,7 @@ class Mute(commands.Cog):
             error = discord.Embed(color=self.color, description="Invalid time format! Use `<number><m/h/d>` where `m` is minutes (max 60), `h` is hours (max 24), and `d` is days (max 28).")
             error.set_author(name="Error Timing Out User")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         try:
             await user.send(f"{emojis.ICONS_WARNING} You have been muted in **{ctx.guild.name}** by **{ctx.author}** for {duration_text}. Reason: {reason or 'None'}")
@@ -194,7 +195,7 @@ class Mute(commands.Cog):
 
         
         view = TimeoutView(user=user, author=ctx.author)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
     @mute.error
@@ -202,18 +203,18 @@ class Mute(commands.Cog):
         
         if isinstance(error, commands.BotMissingPermissions):
             embed = discord.Embed(title=f"{emojis.CROSSICON}> Access Denied", description="I don't have permission to mute members.", color=self.color)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
         elif isinstance(error, discord.Forbidden):
             embed = discord.Embed(title=f"{emojis.CROSSICON} Missing Permissions", description="I can't mute this user as they might have higher privileges (e.g., Admin).", color=self.color)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
             
         else:
             embed = discord.Embed(title=f"{emojis.CROSSICON} Unexpected Error", description=str(error), color=self.color)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

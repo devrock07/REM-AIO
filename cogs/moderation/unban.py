@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import ui
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class BanView(ui.View):
     def __init__(self, user, author):
@@ -100,7 +101,7 @@ class ReasonModal(ui.Modal):
             pass
 
         try:
-            await interaction.response.edit_message(embed=embed, view=self.view)
+            await interaction.response.edit_message(view = embed_to_view(embed, view = self.view))
             for item in self.view.children:
                 item.disabled = True
             await interaction.message.edit(view=self.view)
@@ -140,7 +141,7 @@ class Unban(commands.Cog):
             embed.set_author(name=f"{user.name} is Not Banned!", icon_url=self.get_user_avatar(user))
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             view = AlreadyUnbannedView(user=user, author=ctx.author)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message 
             return
 
@@ -162,13 +163,13 @@ class Unban(commands.Cog):
         embed.timestamp = discord.utils.utcnow()
 
         view = BanView(user=user, author=ctx.author)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

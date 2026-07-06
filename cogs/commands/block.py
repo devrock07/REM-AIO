@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils import Paginator, DescriptionEmbedPaginator
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Block(commands.Cog):
   def __init__(self, bot):
@@ -55,7 +56,7 @@ class Block(commands.Cog):
           description=f"{user.mention} is already blacklisted.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
       else:
         await db.execute('INSERT INTO user_blacklist (user_id) VALUES (?)', (user.id,))
         await db.commit()
@@ -64,7 +65,7 @@ class Block(commands.Cog):
           description=f"{user.mention} has been added to the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
   @user.command(name="remove", help="Remove a user from the blacklist.")
   @commands.is_owner()
@@ -77,7 +78,7 @@ class Block(commands.Cog):
           description=f"{user.mention} is not in the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
       else:
         await db.execute('DELETE FROM user_blacklist WHERE user_id = ?', (user.id,))
         await db.commit()
@@ -86,7 +87,7 @@ class Block(commands.Cog):
           description=f"{user.mention} has been removed from the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
   @user.command(name="show", aliases=["list"], help="Shows all Blacklisted users.")
   @commands.is_owner()
@@ -100,7 +101,7 @@ class Block(commands.Cog):
           description="There are no users in the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
         return
 
       blacklist = []
@@ -144,7 +145,7 @@ class Block(commands.Cog):
           description=f"Guild with ID `{guild_id}` is already blacklisted.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
       else:
         await db.execute('INSERT INTO guild_blacklist (guild_id) VALUES (?)', (guild_id,))
         await db.commit()
@@ -153,7 +154,7 @@ class Block(commands.Cog):
           description=f"Guild with ID `{guild_id}` has been added to the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
 
   @guild.command(name="remove", help="Remove a guild from the blacklist.")
   @commands.is_owner()
@@ -166,7 +167,7 @@ class Block(commands.Cog):
           description=f"Guild with ID `{guild_id}` is not in the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
       else:
         await db.execute('DELETE FROM guild_blacklist WHERE guild_id = ?', (guild_id,))
         await db.commit()
@@ -175,7 +176,7 @@ class Block(commands.Cog):
           description=f"Guild with ID `{guild_id}` has been removed from the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
         
 
   @guild.command(name="show", aliases=["list"], help="Shows the list of blacklisted guilds")
@@ -190,7 +191,7 @@ class Block(commands.Cog):
           description="There are no guilds in the blacklist.",
           color=0x000000
         )
-        await ctx.reply(embed=embed)
+        await ctx.reply(view = embed_to_view(embed))
         return
 
       blacklist = []
@@ -218,6 +219,6 @@ class Block(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out support or DM me.
 """

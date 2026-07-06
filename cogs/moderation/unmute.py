@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord import ui
 from utils.Tools import *
 from datetime import timedelta
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class MuteUnmuteView(ui.View):
     def __init__(self, user, author):
@@ -90,7 +91,7 @@ class MuteReasonModal(ui.Modal):
         success_embed.set_footer(text=f"Requested by {self.author}", icon_url=self.author.avatar.url if self.author.avatar else self.author.default_avatar.url)
         success_embed.timestamp = discord.utils.utcnow()
 
-        await interaction.response.edit_message(embed=success_embed, view=self.view)
+        await interaction.response.edit_message(view = embed_to_view(success_embed, view = self.view))
 
         
         for item in self.view.children:
@@ -147,7 +148,7 @@ class Unmute(commands.Cog):
             embed.set_author(name=f"{user.name} is Not Muted!", icon_url=self.get_user_avatar(user))
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             view = MuteUnmuteView(user=user, author=ctx.author)
-            message = await ctx.send(embed=embed, view=view)
+            message = await ctx.send(view = embed_to_view(embed, view = view))
             view.message = message
             return
 
@@ -167,7 +168,7 @@ class Unmute(commands.Cog):
             error = discord.Embed(color=self.color, description="I can't unmute a user with higher permissions!")
             error.set_footer(text=f"Requested by {ctx.author}", icon_url=self.get_user_avatar(ctx.author))
             error.set_author(name="Error Unmuting User", icon_url="https://cdn.discordapp.com/emojis/1294218790082711553.png")
-            return await ctx.send(embed=error)
+            return await ctx.send(view = embed_to_view(error))
 
         embed = discord.Embed(
             description=f"** Target User:** [{user}](https://discord.com/users/{user.id})\n** User Mention:** {user.mention}\n**DM Sent:** {dm_status}",
@@ -179,13 +180,13 @@ class Unmute(commands.Cog):
         embed.timestamp = discord.utils.utcnow()
 
         view = MuteUnmuteView(user=user, author=ctx.author)
-        message = await ctx.send(embed=embed, view=view)
+        message = await ctx.send(view = embed_to_view(embed, view = view))
         view.message = message
 
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

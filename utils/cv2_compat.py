@@ -14,10 +14,98 @@ Usage:
 """
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from typing import Optional, Any
 import discord
 
-__all__ = ("Panel", "cv2_send")
+__all__ = ("Panel", "cv2_send", "embed_to_view", "embeds_to_view")
+
+
+def _asset_url(value: Any) -> Optional[str]:
+    url = getattr(value, "url", None)
+    return str(url) if url else None
+
+
+def _add_embed_parts(container_children: list[discord.ui.Item], embed: discord.Embed) -> None:
+    author_name = getattr(embed.author, "name", None)
+    if author_name:
+        container_children.append(discord.ui.TextDisplay(f"> {author_name}"))
+
+    if embed.title:
+        title = f"## {embed.title}"
+        if embed.url:
+            title = f"## [{embed.title}]({embed.url})"
+        container_children.append(discord.ui.TextDisplay(title))
+
+    if author_name or embed.title:
+        container_children.append(discord.ui.Separator(visible=False))
+
+    if embed.description:
+        container_children.append(discord.ui.TextDisplay(embed.description))
+
+    thumb_url = _asset_url(embed.thumbnail)
+    if thumb_url:
+        container_children.append(discord.ui.Thumbnail(thumb_url))
+
+    image_url = _asset_url(embed.image)
+    if image_url:
+        container_children.append(discord.ui.MediaGallery(discord.MediaGalleryItem(image_url)))
+
+    if embed.fields:
+        if embed.description or embed.title or author_name or thumb_url or image_url:
+            container_children.append(discord.ui.Separator())
+        for field in embed.fields:
+            container_children.append(discord.ui.TextDisplay(f"**{field.name}**\n{field.value}"))
+
+    footer_text = getattr(embed.footer, "text", None)
+    if footer_text:
+        container_children.append(discord.ui.Separator())
+        container_children.append(discord.ui.TextDisplay(f"-# {footer_text}"))
+
+
+def _copy_view_items(target: discord.ui.LayoutView, source: Optional[discord.ui.View]) -> None:
+    if source is None:
+        return
+
+    for child in list(getattr(source, "children", ())):
+        try:
+            target.add_item(child)
+        except Exception:
+            continue
+
+    for name in ("interaction_check", "on_timeout", "on_error"):
+        if hasattr(source, name):
+            try:
+                setattr(target, name, getattr(source, name))
+            except Exception:
+                pass
+
+
+def embeds_to_view(
+    embeds: Optional[Sequence[discord.Embed]],
+    view: Optional[discord.ui.View] = None,
+    *,
+    timeout: Optional[float] = None,
+) -> discord.ui.LayoutView:
+    children: list[discord.ui.Item] = []
+    for index, embed in enumerate(embeds or []):
+        if index:
+            children.append(discord.ui.Separator())
+        _add_embed_parts(children, embed)
+
+    layout = discord.ui.LayoutView(timeout=timeout if timeout is not None else getattr(view, "timeout", 180))
+    layout.add_item(discord.ui.Container(*children))
+    _copy_view_items(layout, view)
+    return layout
+
+
+def embed_to_view(
+    embed: Optional[discord.Embed],
+    view: Optional[discord.ui.View] = None,
+    *,
+    timeout: Optional[float] = None,
+) -> discord.ui.LayoutView:
+    return embeds_to_view([embed] if embed is not None else [], view=view, timeout=timeout)
 
 
 class Panel:

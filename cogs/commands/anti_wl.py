@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 class Whitelist(commands.Cog):
@@ -55,7 +56,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description=f"{emojis.CROSSICON} | Your Server Doesn't Meet My 30 Member Criteria"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         prefix=ctx.prefix
 
@@ -77,7 +78,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description="Only Server Owner or Extra Owner can Run this Command!"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         if not antinuke or not antinuke[0]:
             embed = discord.Embed(
@@ -90,7 +91,7 @@ class Whitelist(commands.Cog):
                 )
             )
             embed.set_thumbnail(url=ctx.bot.user.avatar.url)
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         if not member:
             embed = discord.Embed(
@@ -100,7 +101,7 @@ class Whitelist(commands.Cog):
             )
             embed.add_field(name="__**Usage**__", value=f"{emojis.ICONARROWRIGHT} `{prefix}whitelist @user/id`\n{emojis.ICONARROWRIGHT} `{prefix}wl @user`")
             embed.set_thumbnail(url=ctx.bot.user.avatar.url)
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         async with self.db.execute(
             "SELECT * FROM whitelisted_users WHERE guild_id = ? AND user_id = ?",
@@ -113,7 +114,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description=f"<@{member.id}> is already a whitelisted member, **Unwhitelist** the user and try again."
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         await self.db.execute(
             "INSERT INTO whitelisted_users (guild_id, user_id) VALUES (?, ?)",
@@ -169,9 +170,9 @@ class Whitelist(commands.Cog):
         embed.add_field(name="**Executor**", value=f"<@!{ctx.author.id}>", inline=True)
         embed.add_field(name="**Target**", value=f"<@!{member.id}>", inline=True)
         embed.set_thumbnail(url=self.bot.user.avatar.url)
-        embed.set_footer(text=f"Developed by Quantum X Development™")
+        embed.set_footer(text=f"Developed by REM ALL IN ONE BOT")
 
-        msg = await ctx.send(embed=embed, view=view)
+        msg = await ctx.send(view = embed_to_view(embed, view = view))
 
         def check(interaction):
             return interaction.user.id == ctx.author.id and interaction.message.id == msg.id
@@ -210,9 +211,9 @@ class Whitelist(commands.Cog):
                 embed.add_field(name="**Executor**", value=f"<@!{ctx.author.id}>", inline=True)
                 embed.add_field(name="**Target**", value=f"<@!{member.id}>", inline=True)
                 embed.set_thumbnail(url=self.bot.user.avatar.url)
-                embed.set_footer(text=f"Developed by Quantum X Development™")
+                embed.set_footer(text=f"Developed by REM ALL IN ONE BOT")
 
-                await interaction.response.edit_message(embed=embed, view=None)
+                await interaction.response.edit_message(view = embed_to_view(embed, view = None))
             else:
                 
                 fields = {
@@ -254,9 +255,9 @@ class Whitelist(commands.Cog):
                 embed.add_field(name="**Executor**", value=f"<@!{ctx.author.id}>", inline=True)
                 embed.add_field(name="**Target**", value=f"<@!{member.id}>", inline=True)
                 embed.set_thumbnail(url=self.bot.user.avatar.url)
-                embed.set_footer(text=f"Developed by Quantum X Development™")
+                embed.set_footer(text=f"Developed by REM ALL IN ONE BOT")
 
-                await interaction.response.edit_message(embed=embed, view=None)
+                await interaction.response.edit_message(view = embed_to_view(embed, view = None))
         except TimeoutError:
             await msg.edit(view=None)
 
@@ -274,7 +275,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description=f"{emojis.CROSSICON} | Your Server Doesn't Meet My 30 Member Criteria"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         pre=ctx.prefix
 
@@ -296,7 +297,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description="Only Server Owner or Extra Owner can Run this Command!"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         if not antinuke or not antinuke[0]:
             embed = discord.Embed(
@@ -308,7 +309,7 @@ class Whitelist(commands.Cog):
                     f"To enable use `{pre}antinuke enable` **"
                 )
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
 
         async with self.db.execute(
@@ -322,7 +323,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description="No whitelisted users found."
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         whitelisted_users = [self.bot.get_user(user_id[0]) for user_id in data]
         whitelisted_users_str = ", ".join(f"<@!{user.id}>" for user in whitelisted_users if user)
@@ -332,7 +333,7 @@ class Whitelist(commands.Cog):
             title=f"__Whitelisted Users for {ctx.guild.name}__",
             description=whitelisted_users_str
         )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 
     @commands.hybrid_command(name="whitelistreset", aliases=['wlreset'], help="Resets the whitelisted users.")
@@ -348,7 +349,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description=f"{emojis.CROSSICON} | Your Server Doesn't Meet My 30 Member Criteria"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         pre=ctx.prefix
 
@@ -370,7 +371,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description="Only Server Owner or Extra Owner can Run this Command!"
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         if not antinuke or not antinuke[0]:
             embed = discord.Embed(
@@ -382,7 +383,7 @@ class Whitelist(commands.Cog):
                     f"To enable use `{pre}antinuke enable` **"
                 )
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         async with self.db.execute(
             "SELECT user_id FROM whitelisted_users WHERE guild_id = ?",
@@ -396,7 +397,7 @@ class Whitelist(commands.Cog):
                 color=0x000000,
                 description="No whitelisted users found."
             )
-            return await ctx.send(embed=embed)
+            return await ctx.send(view = embed_to_view(embed))
 
         await self.db.execute("DELETE FROM whitelisted_users WHERE guild_id = ?", (ctx.guild.id,))
         await self.db.commit()
@@ -404,11 +405,11 @@ class Whitelist(commands.Cog):
             color=0x000000,
             description=f"Removed all whitelisted members from {ctx.guild.name}"
         )
-        await ctx.send(embed=embed)
+        await ctx.send(view = embed_to_view(embed))
 
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

@@ -3,13 +3,14 @@ import discord
 from discord.ext import commands
 from utils.Tools import get_ignore_data
 import aiosqlite
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Mention(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.color = 0x0095ff
-        self.bot_name = "Axon X"
+        self.bot_name = "REM ALL IN ONE BOT"
 
     async def is_blacklisted(self, message):
         async with aiosqlite.connect("db/block.db") as db:
@@ -52,7 +53,7 @@ class Mention(commands.Cog):
                     description=f"Hey {message.author.mention},\nPrefix For This Server is `{prefix}`\nServer ID: {message.guild.id}\n\nType `{prefix}help` for more information."
                 )
                 embed.set_thumbnail(url=self.bot.user.avatar.url)
-                embed.set_footer(text="Powered by Axon Development™", icon_url=self.bot.user.avatar.url)
+                embed.set_footer(text="Powered by REM ALL IN ONE BOT", icon_url=self.bot.user.avatar.url)
 
                 buttons = [
                     discord.ui.Button(label="Invite", style=discord.ButtonStyle.link, url="https://discord.com/oauth2/authorize?client_id=1327994903048884288&permissions=8&integration_type=0&scope=bot+applications.commands"),
@@ -64,4 +65,4 @@ class Mention(commands.Cog):
                 for button in buttons:
                     view.add_item(button)
 
-                await message.channel.send(embed=embed, view=view)
+                await message.channel.send(view = embed_to_view(embed, view = view))

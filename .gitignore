@@ -53,6 +53,8 @@ data/pictures/*_output.*
 data/pictures/spotify_card_output.png
 *.tmp
 *.temp
+*.bak
+*.bak2
 
 # OS and editor files
 .DS_Store

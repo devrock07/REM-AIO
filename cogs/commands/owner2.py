@@ -5,6 +5,7 @@ from discord import Member
 from utils import Paginator, DescriptionEmbedPaginator
 from datetime import timedelta
 import asyncio
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Global(commands.Cog):
     def __init__(self, client):
@@ -84,7 +85,7 @@ class Global(commands.Cog):
 
             success_button.callback = list_success
             failure_button.callback = list_failure
-            await ctx.send(embed=embed, view=new_view)
+            await ctx.send(view = embed_to_view(embed, view = new_view))
 
         async def cancel(interaction):
             if interaction.user != ctx.author:
@@ -93,7 +94,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
     @global_command.command(name="kick", help="Kicks the user from all mutual guilds.")
     @commands.is_owner()
@@ -160,7 +161,7 @@ class Global(commands.Cog):
 
             success_button.callback = list_success
             failure_button.callback = list_failure
-            await ctx.send(embed=embed, view=new_view)
+            await ctx.send(view = embed_to_view(embed, view = new_view))
 
         async def cancel(interaction):
             if interaction.user != ctx.author:
@@ -169,7 +170,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
     @global_command.command(name="timeout", help="Timeouts the user for 28 days in all mutual guilds.")
     @commands.is_owner()
@@ -240,7 +241,7 @@ class Global(commands.Cog):
 
             success_button.callback = list_success
             failure_button.callback = list_failure
-            await ctx.send(embed=embed, view=new_view)
+            await ctx.send(view = embed_to_view(embed, view = new_view))
 
         async def cancel(interaction):
             if interaction.user != ctx.author:
@@ -249,7 +250,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
 
     @global_command.command(name="nick", help="Changes the nickname of a user in all mutual guilds.")
@@ -322,7 +323,7 @@ class Global(commands.Cog):
 
             success_button.callback = list_success
             failure_button.callback = list_failure
-            await ctx.send(embed=embed, view=new_view)
+            await ctx.send(view = embed_to_view(embed, view = new_view))
 
         async def cancel(interaction):
             if interaction.user != ctx.author:
@@ -331,7 +332,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
 
     @global_command.command(name="clearnick", help="Clears the nickname of a user in all mutual guilds.")
@@ -401,7 +402,7 @@ class Global(commands.Cog):
 
             success_button.callback = list_success
             failure_button.callback = list_failure
-            await ctx.send(embed=embed, view=new_view)
+            await ctx.send(view = embed_to_view(embed, view = new_view))
 
         async def cancel(interaction):
             if interaction.user != ctx.author:
@@ -410,7 +411,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
 
     @global_command.command(name="freezenick", help="Freezes a user's nickname in all mutual guilds.")
@@ -503,7 +504,7 @@ class Global(commands.Cog):
             failure_button.callback = list_failure
             stop_button.callback = stop_freeze
 
-            await ctx.send(embed=embed, view=result_view)
+            await ctx.send(view = embed_to_view(embed, view = result_view))
             asyncio.create_task(self.nickname_freeze_task(user.id))
 
         async def cancel(interaction):
@@ -514,7 +515,7 @@ class Global(commands.Cog):
 
         yes_button.callback = confirm
         no_button.callback = cancel
-        await ctx.send(embed=confirm_embed, view=view)
+        await ctx.send(view = embed_to_view(confirm_embed, view = view))
 
     async def nickname_freeze_task(self, user_id: int):
         while user_id in self.client.frozen_nicknames:

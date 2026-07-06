@@ -6,6 +6,7 @@ import uuid
 from PIL import Image
 import bisect
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 
 class Slots(commands.Cog):
@@ -77,7 +78,7 @@ class Slots(commands.Cog):
             )
 
             embed.set_image(url=f"attachment://{unique_filename}")
-            await message.edit(content=None, embed=embed)
+            await message.edit(content=None, view = embed_to_view(embed))
 
             os.remove(fp)
         except Exception as e:
@@ -87,6 +88,6 @@ class Slots(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

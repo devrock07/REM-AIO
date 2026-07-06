@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import aiohttp
 import os
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 PEXELS_API_KEY = "js24mfV1bCCvgV6KfnEFvo5UnCHnATFarFnAdDrpDbczl7f0yXpjDF8x"
 
@@ -31,7 +32,7 @@ class ImageCommands(commands.Cog):
     async def boy_image(self, ctx):
         url = await self.fetch_pexels_image("handsome boy")
         if url:
-            await ctx.send(embed=discord.Embed(title="👦 Boy Pic").set_image(url=url))
+            await ctx.send(view = embed_to_view(discord.Embed(title="👦 Boy Pic").set_image(url=url)))
         else:
             await ctx.send("No boy image found.")
 
@@ -39,7 +40,7 @@ class ImageCommands(commands.Cog):
     async def girl_image(self, ctx):
         url = await self.fetch_pexels_image("beautiful girl")
         if url:
-            await ctx.send(embed=discord.Embed(title="👧 Girl Pic").set_image(url=url))
+            await ctx.send(view = embed_to_view(discord.Embed(title="👧 Girl Pic").set_image(url=url)))
         else:
             await ctx.send("No girl image found.")
 
@@ -47,14 +48,14 @@ class ImageCommands(commands.Cog):
     async def couple_image(self, ctx):
         url = await self.fetch_pexels_image("romantic couple")
         if url:
-            await ctx.send(embed=discord.Embed(title="💑 Couple Pic").set_image(url=url))
+            await ctx.send(view = embed_to_view(discord.Embed(title="💑 Couple Pic").set_image(url=url)))
         else:
             await ctx.send("No couple image found.")
 
     @commands.command(name="anime")
     async def anime_image(self, ctx):
         url = await self.fetch_waifu_image("waifu")
-        await ctx.send(embed=discord.Embed(title="🧚 Anime Waifu").set_image(url=url))
+        await ctx.send(view = embed_to_view(discord.Embed(title="🧚 Anime Waifu").set_image(url=url)))
 
 async def setup(bot):
     await bot.add_cog(ImageCommands(bot))

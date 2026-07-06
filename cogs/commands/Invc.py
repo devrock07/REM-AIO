@@ -5,6 +5,7 @@ from discord.ext import commands
 import aiosqlite
 import asyncio
 from utils.Tools import *
+from utils.cv2_compat import embed_to_view, embeds_to_view
 
 class Invcrole(commands.Cog):
     def __init__(self, bot):
@@ -42,13 +43,13 @@ class Invcrole(commands.Cog):
                 if row:
                     embed = discord.Embed(title=f"{emojis.ICONS_WARNING} Access Denied",
                                           description=f"VC role is already set in this guild with the role {ctx.guild.get_role(row[0]).mention}.\nPlease **remove** it to add another one.", color=0x000000)
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(view = embed_to_view(embed))
                     return
             await db.execute('INSERT INTO vcroles (guild_id, role_id) VALUES (?, ?)', (ctx.guild.id, role.id))
             await db.commit()
             embed = discord.Embed(title=f"{emojis.TICK} Success",
                                   description=f"VC role {role.mention} added for this guild.", color=0x000000)
-            await ctx.reply(embed=embed)
+            await ctx.reply(view = embed_to_view(embed))
 
     @vcrole.command(name='remove', aliases=["reset"], help="Removes the role from vcrole list")
     @blacklist_check()
@@ -61,13 +62,13 @@ class Invcrole(commands.Cog):
                 if not row:
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                           description="Given role is not set in VC role.", color=0x000000)
-                    await ctx.send(embed=embed)
+                    await ctx.send(view = embed_to_view(embed))
                     return
             await db.execute('DELETE FROM vcroles WHERE guild_id = ? AND role_id = ?', (ctx.guild.id, role.id))
             await db.commit()
             embed = discord.Embed(title=f"{emojis.TICK} Success",
                                   description=f"VC role {role.mention} removed for this guild.", color=0x000000)
-            await ctx.send(embed=embed)
+            await ctx.send(view = embed_to_view(embed))
 
     @vcrole.command(name='config', aliases=['view', 'show'], help="Shows the Current vcrole in this Guild")
     @blacklist_check()
@@ -80,13 +81,13 @@ class Invcrole(commands.Cog):
                 if not row:
                     embed = discord.Embed(title=f"{emojis.CROSSICON} Error",
                                           description="VC role is not set in this guild.", color=0x000000)
-                    await ctx.send(embed=embed)
+                    await ctx.send(view = embed_to_view(embed))
                     return
                 role = ctx.guild.get_role(row[0])
                 embed = discord.Embed(title="VC Role Configuration",
                                       description=f"Current VC role in this guild is {role.mention}.", color=0x000000)
                 embed.set_footer(text="Make sure to place My role above Vc role")
-                await ctx.send(embed=embed)
+                await ctx.send(view = embed_to_view(embed))
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -99,9 +100,9 @@ class Invcrole(commands.Cog):
                     role = member.guild.get_role(row[0])
 
                     if after.channel and role not in member.roles:
-                        await self.add_role_with_retry(member, role, reason="Member Joined VC | Olympus Invcrole")
+                        await self.add_role_with_retry(member, role, reason="Member Joined VC | REM ALL IN ONE BOT Invcrole")
                     elif not after.channel and role in member.roles:
-                        await self.remove_role_with_retry(member, role, reason="Member Left VC | Olympus Invcrole")
+                        await self.remove_role_with_retry(member, role, reason="Member Left VC | REM ALL IN ONE BOT Invcrole")
         except discord.Forbidden:
             print(f"Bot lacks permissions to maange role in a guild during Invc Event .")
         except Exception as e:
@@ -139,6 +140,6 @@ class Invcrole(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/odx (Olympus Development)
+    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """
