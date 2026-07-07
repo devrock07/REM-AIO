@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING
 from discord.ext import commands
 
 from utils.cache import TTLCache
-from utils.config import BYPASS_IDS, OWNER_IDS
+from utils.config import BYPASS_IDS, OWNER_IDS, PREFIX
 from utils.database import connect
 
 if TYPE_CHECKING:
     import discord
     from core.Context import Context
 
-DEFAULT_PREFIX = ">"
+DEFAULT_PREFIX = PREFIX
 
 # Tuned for a large command surface: comfortable normal use, firm anti-spam.
 RATE_BURST_LIMIT = 10

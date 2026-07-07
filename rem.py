@@ -18,7 +18,7 @@ from discord.ext import commands
 from flask import Flask
 
 from core.rem import Rem
-from utils.config import COMMAND_LOG_IGNORE_IDS, COMMAND_LOG_WEBHOOK_URL, ENABLE_KEEP_ALIVE, LOG_LEVEL, NAME, PORT, TOKEN
+from utils.config import COMMAND_LOG_IGNORE_IDS, COMMAND_LOG_WEBHOOK_URL, ENABLE_KEEP_ALIVE, LOG_LEVEL, NAME, PORT, PREFIX, TOKEN
 from utils import console
 from utils.startup import StartupError, validate_startup_config
 
@@ -69,7 +69,13 @@ async def on_ready():
         prefix_commands=prefix_count,
         slash_commands=slash_count,
     )
-    log.info("Online as %s (%s guilds, %s users)", client.user, len(client.guilds), len(client.users))
+    log.info(
+        "Online as %s (%s guilds, %s users, prefix=%r)",
+        client.user,
+        len(client.guilds),
+        len(client.users),
+        PREFIX,
+    )
 
 
 @client.event

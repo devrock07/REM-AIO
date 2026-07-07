@@ -7,6 +7,7 @@ from utils.config import (
     LAVALINK_PASSWORD,
     LAVALINK_URI,
     OWNER_IDS,
+    PREFIX,
     TOKEN,
 )
 
@@ -26,6 +27,9 @@ def validate_startup_config() -> list[str]:
 
     if not OWNER_IDS:
         warnings.append("OWNER_IDS is empty — no bot owners are configured.")
+
+    if len(PREFIX) > 10:
+        warnings.append("PREFIX is longer than 10 characters — per-server prefix changes are capped at 10.")
 
     if LAVALINK_ENABLED and (not LAVALINK_URI or not LAVALINK_PASSWORD):
         warnings.append(

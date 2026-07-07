@@ -11,7 +11,7 @@ from discord.ext import commands
 
 from utils import console, getConfig, updateConfig
 from utils.components_v2 import error_panel, warning_panel
-from utils.config import OWNER_IDS
+from utils.config import OWNER_IDS, PREFIX
 from utils.database import close_shared_databases, connect, get_anti_db
 from utils.security import AccessDecision, get_security_gate
 from utils.discord_compat import install_neutral_embed_policy
@@ -235,8 +235,8 @@ class Rem(commands.AutoShardedBot):
             return commands.when_mentioned_or(prefix)(self, message)
 
         if no_prefix:
-            return commands.when_mentioned_or(">", "")(self, message)
-        return commands.when_mentioned_or("")(self, message)
+            return commands.when_mentioned_or(PREFIX, "")(self, message)
+        return commands.when_mentioned_or(PREFIX)(self, message)
 
     async def on_message_edit(self, before, after):
         ctx: Context = await self.get_context(after, cls=Context)

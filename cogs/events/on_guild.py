@@ -5,7 +5,7 @@ from core import Rem, Cog
 import discord
 import logging
 from discord.ui import View, Button
-from utils.config import GUILD_JOIN_LOG_CHANNEL_ID, GUILD_LEAVE_LOG_CHANNEL_ID, serverLink
+from utils.config import GUILD_JOIN_LOG_CHANNEL_ID, GUILD_LEAVE_LOG_CHANNEL_ID, PREFIX, serverLink
 from utils.cv2_compat import embed_to_view, embeds_to_view
 
 log = logging.getLogger(__name__)
@@ -77,8 +77,8 @@ class Guild(Cog):
 
             embed = discord.Embed(
                 description=(
-                    f"{emojis.ICONARROWRIGHT} Prefix For This Server is `>`\n"
-                    f"{emojis.ICONARROWRIGHT} Get Started with `>help`\n"
+                    f"{emojis.ICONARROWRIGHT} Prefix For This Server is `{PREFIX}`\n"
+                    f"{emojis.ICONARROWRIGHT} Get Started with `{PREFIX}help`\n"
                     f"{emojis.ICONARROWRIGHT} For detailed guides, FAQ & information, visit our **[Support Server]({serverLink})**"
                 ),
                 color=0xFF0000,

@@ -10,6 +10,7 @@ load_dotenv(_PROJECT_ROOT / ".env")
 
 __all__ = [
     "TOKEN",
+    "PREFIX",
     "NAME",
     "BotName",
     "server",
@@ -74,6 +75,7 @@ def _csv_int_or_none(name: str) -> int | None:
 
 
 TOKEN = env_str("TOKEN")
+PREFIX = env_str("PREFIX", ">") or ">"
 NAME = env_str("BOT_NAME", "REM ALL IN ONE BOT")
 server = env_str("SUPPORT_SERVER", "https://discord.gg/stVsvE9rhT")
 ch = env_str("SUPPORT_CHANNEL", "https://discord.com/channels/699587669059174461/1271825678710476911")

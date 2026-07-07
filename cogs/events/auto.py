@@ -4,7 +4,7 @@ import discord
 from discord.utils import *
 from core import Rem, Cog
 from utils.Tools import *
-from utils.config import BotName, serverLink
+from utils.config import BotName, PREFIX, serverLink
 from discord.ext import commands
 from discord.ui import Button, View
 from utils.cv2_compat import embed_to_view, embeds_to_view
@@ -19,7 +19,7 @@ class Autorole(Cog):
         async for entry in guild.audit_logs(limit=3):
             if entry.action == discord.AuditLogAction.bot_add:
                 embed = discord.Embed(
-                   description=f"{emojis.FILE} **Thanks for adding me.**\n\n{emojis.ICONARROWRIGHT} My default prefix is `>`\n{emojis.ICONARROWRIGHT} Use the `>help` command to see a list of commands\n{emojis.ICONARROWRIGHT} For detailed guides, FAQ and information, visit our **[Support Server]({serverLink})**",
+                   description=f"{emojis.FILE} **Thanks for adding me.**\n\n{emojis.ICONARROWRIGHT} My default prefix is `{PREFIX}`\n{emojis.ICONARROWRIGHT} Use the `{PREFIX}help` command to see a list of commands\n{emojis.ICONARROWRIGHT} For detailed guides, FAQ and information, visit our **[Support Server]({serverLink})**",
                     color=0x004cff
                )
                 embed.set_thumbnail(url=entry.user.avatar.url if entry.user.avatar else entry.user.default_avatar.url)

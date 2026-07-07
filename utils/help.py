@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from utils import emojis
 from utils.components_v2 import action_row, separator, text
+from utils.config import PREFIX
 
 MAX_PAGE_CHARS = 3600
 HELP_VIEW_TIMEOUT = 120.0
@@ -154,7 +155,7 @@ class HelpView(ExpiringHelpMixin, discord.ui.LayoutView):
 
         self.mapping = mapping
         self.ctx = ctx
-        self.prefix = prefix or getattr(ctx, "prefix", ">") or ">"
+        self.prefix = prefix or getattr(ctx, "prefix", PREFIX) or PREFIX
         self.total_commands = total_commands or len(set(ctx.bot.walk_commands()))
         self.index = 0
 

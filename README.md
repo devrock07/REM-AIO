@@ -60,7 +60,7 @@ copy .env.example .env    # Windows
 python rem.py
 ```
 
-> ✿ Set `TOKEN` and `OWNER_IDS` in `.env` before starting — that's the minimum~
+> ✿ Set `TOKEN`, `OWNER_IDS`, and optionally `PREFIX` in `.env` before starting — that's the minimum~
 
 <br>
 
@@ -183,6 +183,7 @@ copy .env.example .env    # Windows
 
 ```env
 TOKEN=your_discord_bot_token
+PREFIX=>
 BOT_NAME=REM ALL IN ONE BOT
 OWNER_IDS=123456789012345678
 LAVALINK_ENABLED=true
@@ -206,6 +207,7 @@ On startup you'll see the REM console banner, cog load progress, shard connectio
 | --- | :---: | --- |
 | `TOKEN` | ✅ | Discord bot token |
 | `OWNER_IDS` | ✅ | Comma-separated owner user IDs |
+| `PREFIX` | — | Default command prefix (default: `>`) |
 | `BOT_NAME` | — | Display name in panels |
 | `BYPASS_IDS` | — | Users that bypass security checks |
 | `COMMAND_LOG_WEBHOOK_URL` | — | Command usage log webhook |
