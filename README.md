@@ -21,11 +21,8 @@
   <a href="https://discord.com/oauth2/authorize?client_id=1144179659735572640&permissions=8&scope=bot%20applications.commands">
     <img src="https://img.shields.io/badge/♡_Invite_REM-ff6b9d?style=for-the-badge&logo=discord&logoColor=white" alt="Invite REM">
   </a>
-  <a href="https://discord.gg/codexdev">
+  <a href="https://discord.gg/stVsvE9rhT">
     <img src="https://img.shields.io/badge/♡_Support_Server-ffb7c5?style=for-the-badge&logo=discord&logoColor=white" alt="Support Server">
-  </a>
-  <a href="https://top.gg/bot/1144179659735572640/vote">
-    <img src="https://img.shields.io/badge/♡_Vote_on_Top.gg-ffc0cb?style=for-the-badge&logo=upstash&logoColor=white" alt="Vote on Top.gg">
   </a>
   <a href="https://github.com/devrock07/REM-AIO">
     <img src="https://img.shields.io/badge/♡_GitHub-f8c8dc?style=for-the-badge&logo=github&logoColor=black" alt="GitHub">
@@ -316,11 +313,8 @@ See [LICENSE](LICENSE) for full terms.
   <a href="https://discord.com/oauth2/authorize?client_id=1144179659735572640&permissions=8&scope=bot%20applications.commands">
     <img src="https://img.shields.io/badge/invite_me-ff6b9d?style=for-the-badge&logo=discord&logoColor=white" alt="Invite">
   </a>
-  <a href="https://discord.gg/codexdev">
+  <a href="https://discord.gg/stVsvE9rhT">
     <img src="https://img.shields.io/badge/support-ffb7c5?style=for-the-badge&logo=discord&logoColor=white" alt="Support">
-  </a>
-  <a href="https://top.gg/bot/1144179659735572640/vote">
-    <img src="https://img.shields.io/badge/vote-ffc0cb?style=for-the-badge&logo=heart&logoColor=white" alt="Vote">
   </a>
   <a href="https://github.com/devrock07/REM-AIO">
     <img src="https://img.shields.io/badge/github-f8c8dc?style=for-the-badge&logo=github&logoColor=black" alt="GitHub">

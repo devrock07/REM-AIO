@@ -15,7 +15,7 @@ from core import Cog, Rem, Context
 import aiohttp
 import asyncio
 from utils.Tools import *
-from utils.config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+from utils.config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, serverLink
 from utils.cv2_compat import embed_to_view
 from utils.music_panel import (
     guard_empty_queue,
@@ -525,11 +525,9 @@ class Music(commands.Cog):
                     ended = inactivity_embed()
                     if self.client.user and self.client.user.avatar:
                         ended.set_author(name="REM Music", icon_url=self.client.user.avatar.url)
-                    support = Button(label="Support", style=discord.ButtonStyle.link, url="https://discord.gg/codexdev")
-                    vote = Button(label="Vote", style=discord.ButtonStyle.link, url="https://top.gg/bot/1144179659735572640/vote")
+                    support = Button(label="Support", style=discord.ButtonStyle.link, url=serverLink)
                     view = View()
                     view.add_item(support)
-                    view.add_item(vote)
                     await player.ctx.channel.send(view=embed_to_view(ended, view=view))
                 except:
                     pass
@@ -605,11 +603,9 @@ class Music(commands.Cog):
                 ended = queue_ended_embed()
                 if self.client.user and self.client.user.avatar:
                     ended.set_author(name="REM Music", icon_url=self.client.user.avatar.url)
-                support = Button(label="Support", style=discord.ButtonStyle.link, url="https://discord.gg/codexdev")
-                vote = Button(label="Vote", style=discord.ButtonStyle.link, url="https://top.gg/bot/1144179659735572640/vote")
+                support = Button(label="Support", style=discord.ButtonStyle.link, url=serverLink)
                 view = View()
                 view.add_item(support)
-                view.add_item(vote)
                 if ctx:
                     await ctx.send(view=embed_to_view(ended, view=view))
         else:

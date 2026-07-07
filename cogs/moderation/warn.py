@@ -172,6 +172,6 @@ class Warn(commands.Cog):
 """
 @Author: Sonu Jana
     + Discord: me.sonu
-    + Community: https://discord.gg/codexdev (REM ALL IN ONE BOT)
+    + Community: https://discord.gg/stVsvE9rhT (REM ALL IN ONE BOT)
     + for any queries reach out Community or DM me.
 """

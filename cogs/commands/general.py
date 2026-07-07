@@ -456,7 +456,7 @@ class General(commands.Cog):
     )
     support = Button(label='Support',
                     style=discord.ButtonStyle.link,
-                    url=f'https://discord.gg/codexdev')
+                    url=f'https://discord.gg/stVsvE9rhT')
     view = View()
     view.add_item(invite)
     view.add_item(support)

@@ -33,7 +33,7 @@ class AutoBlacklist(Cog):
                             title=f"{emojis.ICONS_WARNING} Guild Blacklisted",
                             description=(
                                 f"This guild has been blacklisted due to spamming or automation. "
-                                f"If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev) with any proof if possible."
+                                f"If you believe this is a mistake, please contact our [Support Server](https://discord.gg/stVsvE9rhT) with any proof if possible."
                             ),
                             color=0x000000
                         )
@@ -91,7 +91,7 @@ class AutoBlacklist(Cog):
                     title=f"{emojis.ICONS_WARNING} Guild Blacklisted",
                     description=(
                         f"The guild has been blacklisted for excessive command usage. "
-                        f"If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev)."
+                        f"If you believe this is a mistake, please contact our [Support Server](https://discord.gg/stVsvE9rhT)."
                     ),
                     color=0x000000
                 )
@@ -112,7 +112,7 @@ class AutoBlacklist(Cog):
                     await self.add_to_blacklist(user_id=message.author.id)
                     embed = discord.Embed(
                         title=f"{emojis.ICONS_WARNING} User Blacklisted",
-                        description=f"**{message.author.mention} has been blacklisted for repeatedly mentioning me. If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev) with any proof if possible.**",
+                        description=f"**{message.author.mention} has been blacklisted for repeatedly mentioning me. If you believe this is a mistake, please contact our [Support Server](https://discord.gg/stVsvE9rhT) with any proof if possible.**",
                         color=0x000000
                     )
                     await message.channel.send(view = embed_to_view(embed))
@@ -144,7 +144,7 @@ class AutoBlacklist(Cog):
                 await self.add_to_blacklist(user_id=ctx.author.id)
                 embed = discord.Embed(
                     title=f"{emojis.ICONS_WARNING} User Blacklisted",
-                    description=f"**{ctx.author.mention} has been blacklisted for spamming commands. If you believe this is a mistake, please contact our [Support Server](https://discord.com/invite/codexdev) with any proof if possible.**",
+                    description=f"**{ctx.author.mention} has been blacklisted for spamming commands. If you believe this is a mistake, please contact our [Support Server](https://discord.gg/stVsvE9rhT) with any proof if possible.**",
                     color=0x000000
                 )
                 await ctx.reply(view = embed_to_view(embed))
