@@ -62,7 +62,19 @@ class EmojiSync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._startup_sync_done = False
+        self._startup_task: asyncio.Task | None = None
         self.config = self._load_config()
+
+    def _bot_api_ready(self) -> bool:
+        if self.bot.is_closed():
+            return False
+        http_session = getattr(self.bot.http, "_HTTPClient__session", None)
+        if http_session is not None and http_session.closed:
+            return False
+        return True
+
+    def _session_closed_error(self, exc: BaseException) -> bool:
+        return isinstance(exc, RuntimeError) and "session is closed" in str(exc).lower()
 
     def _load_config(self) -> dict:
         data: dict = {}
@@ -79,6 +91,7 @@ class EmojiSync(commands.Cog):
         env_asset_dirs = os.getenv("EMOJI_SYNC_ASSET_DIRS", "")
         env_code_emojis = os.getenv("EMOJI_SYNC_CODE_EMOJIS")
         env_startup_sync = os.getenv("EMOJI_SYNC_STARTUP_AUTO_SYNC")
+        env_startup_delay = os.getenv("EMOJI_SYNC_STARTUP_DELAY", "")
 
         source_ids = emoji_config.get("SOURCE_GUILD_IDS", []) or []
         for env_source in env_sources:
@@ -97,8 +110,16 @@ class EmojiSync(commands.Cog):
         if env_startup_sync is not None:
             startup_auto_sync = env_startup_sync.lower() in {"1", "true", "yes", "on"}
 
+        startup_delay = float(emoji_config.get("STARTUP_DELAY_SECONDS", 20))
+        if env_startup_delay.strip():
+            try:
+                startup_delay = max(0.0, float(env_startup_delay))
+            except ValueError:
+                log.warning("Invalid EMOJI_SYNC_STARTUP_DELAY value: %s", env_startup_delay)
+
         return {
             "startup_auto_sync": startup_auto_sync,
+            "startup_delay": startup_delay,
             "sync_code_emojis": sync_code_emojis,
             "source_guild_ids": [int(value) for value in source_ids if str(value).isdigit()],
             "asset_dirs": [str(value) for value in asset_dirs],
@@ -108,6 +129,16 @@ class EmojiSync(commands.Cog):
 
     async def cog_load(self) -> None:
         await self._ensure_db()
+
+    async def cog_unload(self) -> None:
+        if self._startup_task and not self._startup_task.done():
+            self._startup_task.cancel()
+            try:
+                await self._startup_task
+            except asyncio.CancelledError:
+                pass
+            except Exception:
+                log.debug("Startup emoji sync task ended with error during unload", exc_info=True)
 
     async def _ensure_db(self) -> None:
         async with connect(DB_PATH) as db:
@@ -471,6 +502,11 @@ class EmojiSync(commands.Cog):
             return result
 
         for asset in assets:
+            if not self._bot_api_ready():
+                result.failed.append("Bot HTTP session closed — stopping guild emoji sync.")
+                log.warning("Stopping guild emoji sync early: bot session is not available.")
+                break
+
             key = asset.name.lower()
             if key in existing_names:
                 result.already_exists.append(asset.name)
@@ -497,8 +533,12 @@ class EmojiSync(commands.Cog):
                 log.warning("Guild emoji upload failed for %s: %s", asset.name, exc)
                 await asyncio.sleep(self.config["upload_delay"])
             except Exception as exc:
+                if self._session_closed_error(exc):
+                    result.failed.append("Bot HTTP session closed — stopping guild emoji sync.")
+                    log.warning("Guild emoji sync stopped: Discord HTTP session closed.")
+                    break
                 result.failed.append(f"{asset.name}: {exc}")
-                log.exception("Guild emoji upload failed for %s", asset.name)
+                log.warning("Guild emoji upload failed for %s: %s", asset.name, exc)
         return result
 
     async def _sync_to_application(self, guild_id: int, assets: list[EmojiAsset]) -> EmojiSyncResult:
@@ -516,6 +556,11 @@ class EmojiSync(commands.Cog):
             return result
 
         for asset in assets:
+            if not self._bot_api_ready():
+                result.failed.append("Bot HTTP session closed — stopping application emoji sync.")
+                log.warning("Stopping application emoji sync early: bot session is not available.")
+                break
+
             key = asset.name.lower()
             if key in existing_names:
                 result.already_exists.append(asset.name)
@@ -536,8 +581,12 @@ class EmojiSync(commands.Cog):
                 log.warning("Application emoji upload failed for %s: %s", asset.name, exc)
                 await asyncio.sleep(self.config["upload_delay"])
             except Exception as exc:
+                if self._session_closed_error(exc):
+                    result.failed.append("Bot HTTP session closed — stopping application emoji sync.")
+                    log.warning("Application emoji sync stopped: Discord HTTP session closed.")
+                    break
                 result.failed.append(f"{asset.name}: {exc}")
-                log.exception("Application emoji upload failed for %s", asset.name)
+                log.warning("Application emoji upload failed for %s: %s", asset.name, exc)
 
         self._refresh_application_emoji_registry(existing)
         return result
@@ -615,14 +664,13 @@ class EmojiSync(commands.Cog):
         view = basic_panel(title, result.lines() + extra, timeout=180)
         await destination.send(view=view)
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        if self._startup_sync_done:
-            return
-        self._startup_sync_done = True
-        await self.bot.wait_until_ready()
+    async def _run_startup_sync(self) -> None:
+        delay = float(self.config.get("startup_delay", 20))
+        if delay:
+            await asyncio.sleep(delay)
 
-        if not self.config["startup_auto_sync"]:
+        if not self._bot_api_ready():
+            log.warning("Skipping startup emoji sync: bot HTTP session is not ready.")
             return
 
         try:
@@ -634,8 +682,14 @@ class EmojiSync(commands.Cog):
                 len(result.skipped),
                 len(result.failed),
             )
+        except asyncio.CancelledError:
+            log.info("Startup application emoji sync cancelled.")
+            raise
         except Exception:
             log.exception("Startup application emoji sync failed")
+
+        if not self._bot_api_ready():
+            return
 
         async with connect(DB_PATH) as db:
             async with db.execute(
@@ -644,6 +698,9 @@ class EmojiSync(commands.Cog):
                 rows = await cursor.fetchall()
 
         for guild_id, app_target in rows:
+            if not self._bot_api_ready():
+                log.warning("Stopping per-guild startup emoji sync: bot HTTP session closed.")
+                break
             guild = self.bot.get_guild(guild_id)
             if guild is None:
                 continue
@@ -652,8 +709,25 @@ class EmojiSync(commands.Cog):
                     await self.run_sync(guild, target="application")
                 else:
                     await self.run_sync(guild, target="guild")
+            except asyncio.CancelledError:
+                raise
             except Exception:
                 log.exception("Startup emoji sync failed for guild %s", guild_id)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if self._startup_sync_done:
+            return
+        self._startup_sync_done = True
+        await self.bot.wait_until_ready()
+
+        if not self.config["startup_auto_sync"]:
+            return
+
+        if self._startup_task and not self._startup_task.done():
+            return
+
+        self._startup_task = asyncio.create_task(self._run_startup_sync())
 
     @commands.hybrid_group(
         name="emojisync",
