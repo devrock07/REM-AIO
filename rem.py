@@ -138,6 +138,8 @@ async def graceful_shutdown(*, reason: str = "signal") -> None:
     console.goodbye()
     log.info("Shutting down (%s)...", reason)
 
+    client._shutting_down = True
+
     if _bot_task is not None and not _bot_task.done():
         _bot_task.cancel()
         try:

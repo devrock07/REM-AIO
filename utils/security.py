@@ -18,10 +18,17 @@ if TYPE_CHECKING:
 DEFAULT_PREFIX = ">"
 
 # Tuned for a large command surface: comfortable normal use, firm anti-spam.
-RATE_BURST_LIMIT = 6
-RATE_BURST_WINDOW = 4.0
-RATE_SUSTAINED_LIMIT = 40
+RATE_BURST_LIMIT = 10
+RATE_BURST_WINDOW = 5.0
+RATE_SUSTAINED_LIMIT = 60
 RATE_SUSTAINED_WINDOW = 60.0
+RATE_LIMIT_NOTIFY_COOLDOWN = 12.0
+
+_UI_INTERACTION_PREFIXES = (
+    "help:v2:",
+    "help:list:",
+    "paginator:",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,6 +95,7 @@ class SecurityGate:
         self._topcheck_cache = TTLCache[bool](ttl=60.0)
         self.rate_limiter = CommandRateLimiter()
         self._trusted_users = set(OWNER_IDS) | set(BYPASS_IDS)
+        self._rate_limit_notify: dict[int, float] = {}
 
     def is_trusted(self, user_id: int) -> bool:
         return user_id in self._trusted_users
@@ -266,12 +274,33 @@ class SecurityGate:
             return True, 0.0
         return self.rate_limiter.check(user_id)
 
+    def should_notify_rate_limit(self, user_id: int) -> bool:
+        """Only surface one rate-limit panel per user per cooldown window."""
+        now = time.monotonic()
+        last = self._rate_limit_notify.get(user_id, 0.0)
+        if now - last < RATE_LIMIT_NOTIFY_COOLDOWN:
+            return False
+        self._rate_limit_notify[user_id] = now
+        return True
+
+    @staticmethod
+    def _is_ui_interaction(interaction: discord.Interaction) -> bool:
+        data = getattr(interaction, "data", None)
+        custom_id = getattr(data, "custom_id", None) if data is not None else None
+        if not custom_id:
+            return False
+        return custom_id.startswith(_UI_INTERACTION_PREFIXES)
+
     async def run_command_gate(self, ctx: Context) -> AccessDecision:
         if self.is_trusted(ctx.author.id):
             return AccessDecision(True)
 
-        if ctx.command and ctx.command.name in {"help", "h"}:
-            return AccessDecision(True)
+        if ctx.command:
+            root = ctx.command.root_parent or ctx.command
+            if root.name in {"help", "h"}:
+                return AccessDecision(True)
+            if getattr(ctx, "invoked_with", None) in {"help", "h"}:
+                return AccessDecision(True)
 
         if ctx.guild is not None:
             blocked = await self.check_blacklist(ctx.author.id, ctx.guild.id)
@@ -291,6 +320,9 @@ class SecurityGate:
     async def run_interaction_gate(self, interaction: discord.Interaction) -> AccessDecision:
         user = interaction.user
         if self.is_trusted(user.id):
+            return AccessDecision(True)
+
+        if self._is_ui_interaction(interaction):
             return AccessDecision(True)
 
         guild_id = interaction.guild_id

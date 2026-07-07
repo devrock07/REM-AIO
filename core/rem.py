@@ -36,6 +36,7 @@ class Rem(commands.AutoShardedBot):
         intents.members = True
         self.session: aiohttp.ClientSession | None = None
         self._synced_app_commands = False
+        self._shutting_down = False
         self.security = get_security_gate()
         super().__init__(
             command_prefix=self.get_prefix,
@@ -59,8 +60,13 @@ class Rem(commands.AutoShardedBot):
         await self.load_extensions()
 
     async def _deny_access(self, ctx: Context, decision: AccessDecision) -> None:
+        if self._shutting_down or self.is_closed():
+            return
+
         reason = decision.reason
         if reason.startswith("rate_limit:"):
+            if not self.security.should_notify_rate_limit(ctx.author.id):
+                return
             retry = reason.split(":", 1)[1]
             view = warning_panel(
                 f"Slow down — try again in **{retry}s**.",
@@ -95,9 +101,12 @@ class Rem(commands.AutoShardedBot):
             view = error_panel("You cannot use this command here.", title="Access Denied")
 
         try:
-            await ctx.reply(view=view, delete_after=8, mention_author=False)
-        except Exception:
+            delete_after = None if reason.startswith("rate_limit:") else 8
+            await ctx.reply(view=view, delete_after=delete_after, mention_author=False)
+        except (discord.HTTPException, asyncio.CancelledError):
             pass
+        except Exception:
+            log.debug("Failed to send access denial", exc_info=True)
 
     async def _global_security_check(self, ctx: Context) -> bool:
         if ctx.command is None:
@@ -111,12 +120,17 @@ class Rem(commands.AutoShardedBot):
         return False
 
     async def _interaction_security_check(self, interaction: discord.Interaction) -> bool:
+        if self._shutting_down or self.is_closed():
+            return False
+
         decision = await self.security.run_interaction_gate(interaction)
         if decision.allowed:
             return True
 
         reason = decision.reason
         if reason.startswith("rate_limit:"):
+            if not self.security.should_notify_rate_limit(interaction.user.id):
+                return False
             retry = reason.split(":", 1)[1]
             message = f"Slow down — try again in **{retry}s**."
         elif reason == "user_blacklisted":
@@ -158,6 +172,9 @@ class Rem(commands.AutoShardedBot):
     async def close(self) -> None:
         if self.is_closed():
             return
+
+        self._shutting_down = True
+        await asyncio.sleep(0.75)
 
         await self._close_cog_resources()
 

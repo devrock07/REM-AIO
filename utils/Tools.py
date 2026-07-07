@@ -210,7 +210,6 @@ def bot_has_permissions(**permissions: bool):
                 title="Missing Bot Permissions",
             ),
             mention_author=False,
-            delete_after=8,
         )
         return False
 
