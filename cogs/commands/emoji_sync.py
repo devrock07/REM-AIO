@@ -254,33 +254,6 @@ class EmojiSync(commands.Cog):
             "details": row[5],
         }
 
-    async def _replace_application_emoji(self, existing: discord.Emoji, asset: EmojiAsset) -> discord.Emoji:
-        if self.bot.application_id is None:
-            raise discord.MissingApplicationID
-
-        if existing.animated:
-            await existing.delete()
-            return await self.bot.create_application_emoji(name=asset.name, image=asset.data)
-
-        payload = {
-            "name": asset.name,
-            "image": discord.utils._bytes_to_base64_data(asset.data),
-        }
-        try:
-            data = await self.bot.http.edit_application_emoji(
-                self.bot.application_id,
-                existing.id,
-                payload=payload,
-            )
-            updated = discord.Emoji(guild=discord.Object(0), state=self.bot._connection, data=data)
-            if updated.animated:
-                await updated.delete()
-                return await self.bot.create_application_emoji(name=asset.name, image=asset.data)
-            return updated
-        except discord.HTTPException:
-            await existing.delete()
-            return await self.bot.create_application_emoji(name=asset.name, image=asset.data)
-
     def _sanitize_name(self, name: str) -> str:
         sanitized = re.sub(r"[^A-Za-z0-9_]", "_", name).strip("_")
         if len(sanitized) < 2:
@@ -590,35 +563,9 @@ class EmojiSync(commands.Cog):
                 break
 
             key = asset.name.lower()
-            existing_emoji = next((emoji for emoji in existing if emoji.name.lower() == key), None)
-            if existing_emoji is not None:
-                try:
-                    updated = await self._replace_application_emoji(existing_emoji, asset)
-                    for index, emoji in enumerate(existing):
-                        if emoji.id == updated.id:
-                            existing[index] = updated
-                            break
-                    else:
-                        existing.append(updated)
-                        existing_names.add(updated.name.lower())
-                    result.uploaded.append(f"{updated.name} (replaced)")
-                    log.info("Replaced application emoji %s for guild %s", updated.name, guild_id)
-                    await asyncio.sleep(self.config["upload_delay"])
-                    continue
-                except discord.HTTPException as exc:
-                    result.failed.append(f"{asset.name}: replace HTTP {exc.status}")
-                    log.warning("Application emoji replace failed for %s: %s", asset.name, exc)
-                    await asyncio.sleep(self.config["upload_delay"])
-                    continue
-                except Exception as exc:
-                    if self._session_closed_error(exc):
-                        result.failed.append("Bot HTTP session closed — stopping application emoji sync.")
-                        log.warning("Application emoji sync stopped: Discord HTTP session closed.")
-                        break
-                    result.failed.append(f"{asset.name}: {exc}")
-                    log.warning("Application emoji replace failed for %s: %s", asset.name, exc)
-                    continue
-
+            if key in existing_names:
+                result.already_exists.append(asset.name)
+                continue
             if len(existing_names) >= 2000:
                 result.skipped.append(f"{asset.name}: application emoji limit reached")
                 continue

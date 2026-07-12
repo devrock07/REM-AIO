@@ -3,10 +3,17 @@
 from __future__ import annotations
 
 import math
+import sys
 from pathlib import Path
 from typing import Callable
 
 from PIL import Image, ImageDraw
+
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from tools.rem_emoji_names import OLD_TO_REM, REM_EMOJI_NAMES
 
 SIZE = 128
 MARGIN = 12
@@ -16,111 +23,7 @@ BLUE = (59, 130, 246)
 WHITE = (255, 255, 255)
 SHADOW = (15, 23, 42, 70)
 
-# All unique emoji names from utils/emojis.py
-EMOJI_NAMES: tuple[str, ...] = (
-    "37496alert",
-    "7club_ban",
-    "_rose",
-    "Autoreact",
-    "autorole",
-    "axon_owner",
-    "BlueDot",
-    "Bots",
-    "browser",
-    "Commands",
-    "CrossIcon",
-    "customrole",
-    "Dc_RedCrownEsports",
-    "delete",
-    "Denied",
-    "disabled1",
-    "dnd",
-    "enabled",
-    "enabled_",
-    "Extra",
-    "filder",
-    "file",
-    "forward",
-    "games",
-    "Gear",
-    "GIFD",
-    "GIFN",
-    "Giveaway",
-    "Giveaways",
-    "greet",
-    "headmod",
-    "heart_em",
-    "Heeriye",
-    "home",
-    "icon_booster",
-    "icon_ping",
-    "iconArrowRight",
-    "iconLoad",
-    "icons_bot",
-    "icons_channel",
-    "icons_discordbotdev",
-    "icons_music",
-    "icons_next",
-    "icons_pause",
-    "icons_plus",
-    "icons_warning",
-    "iconSetting",
-    "idle",
-    "ignore",
-    "info",
-    "InviteTracker",
-    "jiosaavn",
-    "king",
-    "land_yildiz",
-    "loading",
-    "logging",
-    "max__A",
-    "mention",
-    "ml_cross",
-    "mobile",
-    "mod",
-    "Moderation",
-    "Module",
-    "music",
-    "musicstop_icons",
-    "next",
-    "offline",
-    "olympus_cross",
-    "olympus_notify",
-    "olympus_staff",
-    "olympus_tick",
-    "olympusArrow",
-    "online",
-    "owner",
-    "pc",
-    "premium",
-    "questions",
-    "red_dot",
-    "RedHeart",
-    "rewind1",
-    "riverse_fun",
-    "security",
-    "sg_rd",
-    "shuffle",
-    "skip",
-    "SoundCloud",
-    "sq_HeadMod",
-    "star",
-    "tick",
-    "tick_red",
-    "ticket",
-    "timer",
-    "U_admin",
-    "Uptime",
-    "user",
-    "Utility",
-    "VanityRoles",
-    "voice",
-    "Warning",
-    "WarningIcon",
-    "youtube",
-    "Ztick",
-)
+EMOJI_NAMES: tuple[str, ...] = REM_EMOJI_NAMES
 
 DrawFn = Callable[[ImageDraw.ImageDraw, tuple[int, int, int, int]], None]
 
@@ -617,7 +520,7 @@ def _vanity(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
     draw.rounded_rectangle((cx - 18, (box[1] + box[3]) // 2 - 6, cx + 18, (box[1] + box[3]) // 2 + 20), 4, fill=WHITE)
 
 
-SYMBOL_MAP: dict[str, DrawFn] = {
+LEGACY_SYMBOL_MAP: dict[str, DrawFn] = {
     "37496alert": _triangle_warning,
     "7club_ban": _ban,
     "_rose": _rose_simple,
@@ -721,6 +624,12 @@ SYMBOL_MAP: dict[str, DrawFn] = {
     "youtube": _play,
     "Ztick": _check_circle,
 }
+
+SYMBOL_MAP: dict[str, DrawFn] = {}
+for _legacy_name, _draw_fn in LEGACY_SYMBOL_MAP.items():
+    _rem_name = OLD_TO_REM.get(_legacy_name)
+    if _rem_name:
+        SYMBOL_MAP[_rem_name] = _draw_fn
 
 
 def symbol_box() -> tuple[int, int, int, int]:

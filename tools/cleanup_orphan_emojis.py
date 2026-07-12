@@ -20,6 +20,10 @@ def registry_names() -> set[str]:
     return {name.lower() for name in re.findall(r"CustomEmoji\('([^']+)'", text)}
 
 
+def is_rem_pack_name(name: str) -> bool:
+    return name.lower().startswith("rem_")
+
+
 async def main() -> None:
     load_dotenv(ROOT / ".env")
     token = os.environ.get("TOKEN", "").strip()
@@ -34,10 +38,14 @@ async def main() -> None:
         try:
             removed = 0
             for emoji in await client.fetch_application_emojis():
-                if emoji.name.lower() not in wanted:
-                    await emoji.delete()
-                    removed += 1
-                    print(f"Deleted orphan: {emoji.name} ({emoji.id})")
+                name = emoji.name.lower()
+                if name in wanted:
+                    continue
+                if not is_rem_pack_name(emoji.name):
+                    continue
+                await emoji.delete()
+                removed += 1
+                print(f"Deleted orphan rem emoji: {emoji.name} ({emoji.id})")
             print(f"Removed {removed} orphan application emoji(s)")
         finally:
             await client.close()

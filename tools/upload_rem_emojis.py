@@ -179,7 +179,11 @@ async def run_upload(token: str, *, replace: bool) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Upload REM application emoji pack")
     parser.add_argument("--generate-only", action="store_true", help="Only write PNG files")
-    parser.add_argument("--no-replace", action="store_true", help="Skip editing existing emojis")
+    parser.add_argument(
+        "--replace",
+        action="store_true",
+        help="Replace existing application emojis with the same name (default: create only)",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -194,7 +198,7 @@ def main() -> None:
     if not token:
         raise SystemExit("TOKEN missing in .env — cannot upload application emojis.")
 
-    asyncio.run(run_upload(token, replace=not args.no_replace))
+    asyncio.run(run_upload(token, replace=args.replace))
 
 
 if __name__ == "__main__":
