@@ -24,7 +24,7 @@ class React(commands.Cog):
                     if owner == 677952614390038559:
                         
                         emojis = [
-                            f"{emojis.OWNER}",
+                            f"{emojis.REM_OWNER}",
                             f"{emojis.EMOJI_7CLUB_BAN}",
                             f"{emojis.LAND_YILDIZ}",
                             f"{emojis.ROSE}",
@@ -48,9 +48,9 @@ class React(commands.Cog):
                             await message.add_reaction(emoji)
                     else:
                         
-                        await message.add_reaction(f"{emojis.OWNER}")
+                        await message.add_reaction(f"{emojis.REM_OWNER}")
                 except discord.errors.RateLimited as e:
                     await asyncio.sleep(e.retry_after)
-                    await message.add_reaction(f"{emojis.OWNER}")
+                    await message.add_reaction(f"{emojis.REM_OWNER}")
                 except Exception:
                     log.exception("Auto react owner mention failed")

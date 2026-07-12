@@ -32,7 +32,7 @@ class LockUnlockView(ui.View):
             description=f"{emojis.ICONS_CHANNEL} **Channel**: {self.channel.mention}\n{emojis.TICK} **Status**: Unlocked\n{emojis.COMMANDS}**Reason:** Unlock request by {self.author}",
             color=0x000000
         )
-        embed.add_field(name=f"{emojis.OLYMPUS_STAFF} **Moderator:**", value=self.ctx.author.mention, inline=False)
+        embed.add_field(name=f"{emojis.REM_STAFF} **Moderator:**", value=self.ctx.author.mention, inline=False)
         embed.set_author(name=f"Successfully Unlocked {self.channel.name}")
         await self.message.edit(view = embed_to_view(embed, view = self))
 

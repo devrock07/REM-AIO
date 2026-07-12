@@ -119,7 +119,7 @@ class Extraowner(commands.Cog):
                 elif view.value:
                     await self.db.execute('DELETE FROM extraowners WHERE guild_id = ?', (guild_id,))
                     await self.db.commit()
-                    embed = discord.Embed(title=f"{emojis.OLYMPUS_TICK} Success",
+                    embed = discord.Embed(title=f"{emojis.REM_SUCCESS} Success",
                         description="Disabled Extraowner Configuration!",
                         color=0x000000
                     )

@@ -29,7 +29,7 @@ EMOJI_7CLUB_BAN = CustomEmoji('rem_ban', 1525739944205746286, False)
 ROSE = CustomEmoji('rem_rose', 1525740415326621746, False)
 AUTOREACT = CustomEmoji('rem_autoreact', 1525739929978798202, False)
 AUTOROLE = CustomEmoji('rem_autorole', 1525739936966381638, False)
-AXON_OWNER = CustomEmoji('rem_owner', 1525740365976440902, False)
+REM_OWNER = CustomEmoji('rem_owner', 1525740365976440902, False)
 BLUEDOT = CustomEmoji('rem_dot', 1525740064988991689, False)
 BOTS = CustomEmoji('rem_bots', 1525739964845785089, False)
 BROWSER = CustomEmoji('rem_browser', 1525739972294873268, False)
@@ -95,14 +95,13 @@ MUSIC_116319 = CustomEmoji('rem_music', 1525740299379540019, False)
 MUSICSTOP_ICONS = CustomEmoji('rem_stop', 1525740493617631233, False)
 NEXT = CustomEmoji('rem_skip_fwd', 1525740451120812052, False)
 OFFLINE = CustomEmoji('rem_offline', 1525740341972570214, False)
-OLYMPUS_CROSS = CustomEmoji('rem_no', 1525740320925679636, False)
-OLYMPUS_NOTIFY = CustomEmoji('rem_notify', 1525740334976467066, False)
-OLYMPUS_STAFF = CustomEmoji('rem_staff', 1525740465574514930, False)
-OLYMPUS_TICK = CustomEmoji('rem_success', 1525740500999602227, False)
-OLYMPUSARROW = CustomEmoji('rem_arrow', 1525739915503993033, False)
+REM_NO = CustomEmoji('rem_no', 1525740320925679636, False)
+REM_NOTIFY = CustomEmoji('rem_notify', 1525740334976467066, False)
+REM_STAFF = CustomEmoji('rem_staff', 1525740465574514930, False)
+REM_SUCCESS = CustomEmoji('rem_success', 1525740500999602227, False)
+REM_ARROW = CustomEmoji('rem_arrow', 1525739915503993033, False)
 ONLINE = CustomEmoji('rem_online', 1525740358946783364, False)
-OWNER = CustomEmoji('rem_owner', 1525740365976440902, False)
-OWNER_433185 = CustomEmoji('rem_owner', 1525740365976440902, False)
+
 PC = CustomEmoji('rem_pc', 1525740380014907422, False)
 PREMIUM = CustomEmoji('rem_premium', 1525740400877371425, False)
 QUESTIONS = CustomEmoji('rem_help', 1525740177820090428, False)
@@ -142,7 +141,7 @@ EMOJIS: dict[str, CustomEmoji] = {
     'rem_rose': ROSE,
     'rem_autoreact': AUTOREACT,
     'rem_autorole': AUTOROLE,
-    'rem_owner': AXON_OWNER,
+    'rem_owner': REM_OWNER,
     'rem_dot': BLUEDOT,
     'rem_bots': BOTS,
     'rem_browser': BROWSER,
@@ -208,14 +207,13 @@ EMOJIS: dict[str, CustomEmoji] = {
     'rem_stop': MUSICSTOP_ICONS,
     'rem_skip_fwd': NEXT,
     'rem_offline': OFFLINE,
-    'rem_no': OLYMPUS_CROSS,
-    'rem_notify': OLYMPUS_NOTIFY,
-    'rem_staff': OLYMPUS_STAFF,
-    'rem_success': OLYMPUS_TICK,
-    'rem_arrow': OLYMPUSARROW,
+    'rem_no': REM_NO,
+    'rem_notify': REM_NOTIFY,
+    'rem_staff': REM_STAFF,
+    'rem_success': REM_SUCCESS,
+    'rem_arrow': REM_ARROW,
     'rem_online': ONLINE,
-    'rem_owner': OWNER,
-    'rem_owner': OWNER_433185,
+    'rem_owner': REM_OWNER,
     'rem_pc': PC,
     'rem_premium': PREMIUM,
     'rem_help': QUESTIONS,
@@ -255,7 +253,7 @@ EMOJIS_BY_ID: dict[int, CustomEmoji] = {
     1291476899557671054: ROSE,
     1330393356198477824: AUTOREACT,
     1330393358904066148: AUTOROLE,
-    1228227536207740989: AXON_OWNER,
+    1525740365976440902: REM_OWNER,
     1364125472539021352: BLUEDOT,
     1330393366373863526: BOTS,
     1329382931449516058: BROWSER,
@@ -321,14 +319,13 @@ EMOJIS_BY_ID: dict[int, CustomEmoji] = {
     1327829536053923934: MUSICSTOP_ICONS,
     1327829548426854522: NEXT,
     1329382356804440107: OFFLINE,
-    1227866668152393789: OLYMPUS_CROSS,
-    1227866804630720565: OLYMPUS_NOTIFY,
-    1228227884481515613: OLYMPUS_STAFF,
-    1227866641027698792: OLYMPUS_TICK,
-    1297341001341599797: OLYMPUSARROW,
+    1525740320925679636: REM_NO,
+    1525740334976467066: REM_NOTIFY,
+    1525740465574514930: REM_STAFF,
+    1525740500999602227: REM_SUCCESS,
+    1525739915503993033: REM_ARROW,
     1329382084837507092: ONLINE,
-    1272731689948287068: OWNER,
-    1329041011984433185: OWNER_433185,
+
     1329382763161321524: PC,
     1204110058124873889: PREMIUM,
     1329005603669938236: QUESTIONS,

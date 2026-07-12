@@ -137,7 +137,7 @@ class Ignore(commands.Cog):
       count = await cursor.fetchone()
 
       if count[0] >= 30:
-        embed = discord.Embed(title=f"{emojis.OLYMPUS_NOTIFY} Access Denied", description="You can only add up to 30 channels to the ignore list.", color=self.color)
+        embed = discord.Embed(title=f"{emojis.REM_NOTIFY} Access Denied", description="You can only add up to 30 channels to the ignore list.", color=self.color)
         await ctx.reply(view = embed_to_view(embed))
         return
 
@@ -213,7 +213,7 @@ class Ignore(commands.Cog):
       count = await cursor.fetchone()
 
       if count[0] >= 30:
-        embed = discord.Embed(title=f"{emojis.OLYMPUS_NOTIFY} Access Denied", description="You can only add up to 30 users to the ignore list.", color=self.color)
+        embed = discord.Embed(title=f"{emojis.REM_NOTIFY} Access Denied", description="You can only add up to 30 users to the ignore list.", color=self.color)
         await ctx.reply(view = embed_to_view(embed))
         return
 

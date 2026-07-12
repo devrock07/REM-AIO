@@ -478,7 +478,7 @@ class Customrole(commands.Cog):
                     await db.commit()
                     embed = discord.Embed(
             title="Custom Role Configuration Reset",
-            description=f"Deleted All Custom Role commands {emojis.OLYMPUS_TICK}\n\n**Removed Roles:**\n" + "\n".join(removed_roles) if removed_roles else "No roles were previously set.",
+            description=f"Deleted All Custom Role commands {emojis.REM_SUCCESS}\n\n**Removed Roles:**\n" + "\n".join(removed_roles) if removed_roles else "No roles were previously set.",
             color=0x000000
         )
                     

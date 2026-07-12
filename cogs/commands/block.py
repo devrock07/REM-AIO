@@ -77,7 +77,7 @@ class Block(commands.Cog):
       cursor = await db.execute('SELECT user_id FROM user_blacklist WHERE user_id = ?', (user.id,))
       if not await cursor.fetchone():
         embed = discord.Embed(
-          title=f"{emojis.OLYMPUS_CROSS} User Not Blacklisted",
+          title=f"{emojis.REM_NO} User Not Blacklisted",
           description=f"{user.mention} is not in the blacklist.",
           color=0x000000
         )

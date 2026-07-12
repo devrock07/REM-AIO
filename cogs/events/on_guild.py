@@ -33,7 +33,7 @@ class Guild(Cog):
                         name="**__About__**",
                         value=(
                             f"**Name : ** {guild.name}\n**ID :** {guild.id}\n"
-                            f"**Owner {emojis.OWNER} :** {guild.owner} (<@{guild.owner_id}>)\n"
+                            f"**Owner {emojis.REM_OWNER} :** {guild.owner} (<@{guild.owner_id}>)\n"
                             f"**Created At : **{guild.created_at.month}/{guild.created_at.day}/{guild.created_at.year}\n"
                             f"**Members :** {len(guild.members)}"
                         ),
@@ -127,7 +127,7 @@ class Guild(Cog):
                 name="**__About__**",
                 value=(
                     f"**Name : ** {guild.name}\n**ID :** {guild.id}\n"
-                    f"**Owner {emojis.AXON_OWNER} :** {guild.owner} (<@{guild.owner_id}>)\n"
+                    f"**Owner {emojis.REM_OWNER} :** {guild.owner} (<@{guild.owner_id}>)\n"
                     f"**Created At : **{guild.created_at.month}/{guild.created_at.day}/{guild.created_at.year}\n"
                     f"**Members :** {len(guild.members)}"
                 ),

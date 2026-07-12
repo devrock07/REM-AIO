@@ -94,7 +94,7 @@ class TimeSelect(Select):
         if log_channel:
             embed = discord.Embed(
                 title="User Added to No Prefix",
-                description=f"**User**: [{self.user}](https://discord.com/users/{self.user.id})\n**User Mention**: {self.user.mention}\n** ID**: {self.user.id}\n\n** Added By**: [{self.author.display_name}](https://discord.com/users/{self.author.id})\n{emojis.TIMER}**Expiry Time**: {expiry_text}\n{emojis.OLYMPUSARROW} **Timestamp**: {expiry_timestamp}\n\n{emojis.PREMIUM} **Tier**: **{self.values[0].upper()}**",
+                description=f"**User**: [{self.user}](https://discord.com/users/{self.user.id})\n**User Mention**: {self.user.mention}\n** ID**: {self.user.id}\n\n** Added By**: [{self.author.display_name}](https://discord.com/users/{self.author.id})\n{emojis.TIMER}**Expiry Time**: {expiry_text}\n{emojis.REM_ARROW} **Timestamp**: {expiry_timestamp}\n\n{emojis.PREMIUM} **Tier**: **{self.values[0].upper()}**",
                 color=0x000000
             )
             embed.set_thumbnail(url=self.user.avatar.url if self.user.avatar else self.user.default_avatar.url)
